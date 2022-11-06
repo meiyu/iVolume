@@ -52,6 +52,8 @@ public class MainService extends AccessibilityService {
     private final AtomicInteger mLogID = new AtomicInteger(0);
     private final IntUnaryOperator operator = x -> (x < 999) ? (x + 1) : 0;
 
+    // TODO add gps map table, app map table
+
     // listening
     final Uri[] listenedURIs = {
             Settings.System.CONTENT_URI,
@@ -102,6 +104,10 @@ public class MainService extends AccessibilityService {
     Context context;
     LocalBroadcastManager localBroadcastManager;
     VolumeUpdater volumeUpdater;
+
+    // TODO judge whether context changed, if so:
+    // 1. call all four context getter
+    // 2. call volume updater
 
     void jsonSilentPut(JSONObject json, String key, Object value) {
         try {
@@ -265,8 +271,10 @@ public class MainService extends AccessibilityService {
         jsonSilentPut(json, "package", packageName);
         jsonSilentPut(json, "keycodeString", KeyEvent.keyCodeToString(event.getKeyCode()));
 
+        // TODO remove this code
         if (volumeUpdater != null) {
-            volumeUpdater.update();
+            // TODO change param to real context
+            volumeUpdater.update(0, 0, false, 0);
         } else {
             jsonSilentPut(json, "error", "no instance");
         }
