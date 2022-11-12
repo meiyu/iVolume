@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
@@ -35,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntUnaryOperator;
 
@@ -48,6 +50,7 @@ public class MainService extends AccessibilityService {
 
     static final public String ACTION_RECORD_MSG = "com.ivolume.ivolume.mainservice.record_msg";
     static final public String EXTRA_MSG = "com.ivolume.ivolume.mainservice.msg";
+    static final public String CONTEXT_LOG_TAG = "mainservice.getcontext.log";
 
     private final AtomicInteger mLogID = new AtomicInteger(0);
     private final IntUnaryOperator operator = x -> (x < 999) ? (x + 1) : 0;
@@ -104,6 +107,17 @@ public class MainService extends AccessibilityService {
     Context context;
     LocalBroadcastManager localBroadcastManager;
     VolumeUpdater volumeUpdater;
+
+    //监测APP
+    private static String CurrentPackage; //当前app
+    static Map<String, Integer> AppPackageMap = new HashMap<String, Integer>(){{
+        put("com.tencent.wemeet.app", 0); //微信
+        put("com.tencent.mm", 1);  //腾讯会议
+        put("tv.danmaku.bili", 2);  //b站
+        put("com.netease.cloudmusic", 3);  //网易云
+        put("cn.ledongli.ldl", 4);  //乐动力
+    }};
+
 
     // TODO judge whether context changed, if so:
     // 1. call all four context getter
@@ -238,6 +252,7 @@ public class MainService extends AccessibilityService {
         super.onCreate();
         context = getApplicationContext();
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        CurrentPackage = "";
         initialize();
     }
 
@@ -252,6 +267,24 @@ public class MainService extends AccessibilityService {
         CharSequence pkg = event.getPackageName();
         if (pkg != null) {
             packageName = event.getPackageName().toString();
+        }
+
+        int type=event.getEventType();
+        //监测app变化
+        if(type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED){
+            String tmpPackage = event.getPackageName()==null? "": event.getPackageName().toString();
+            if(!tmpPackage.equals(CurrentPackage)){
+                //当前app包名改变时
+                //只针对AppPackageMap的5个app进行处理，忽略其他包
+                if(AppPackageMap.containsKey(tmpPackage)) {
+                    CurrentPackage = tmpPackage;
+                    int cur_index = AppPackageMap.get(CurrentPackage);
+                    Log.d(CONTEXT_LOG_TAG, "CurrentPackage changed, name:" + CurrentPackage
+                    + ", index:" + Integer.toString(cur_index));
+                    //TODO get other context & update volume
+
+                }
+            }
         }
     }
 
@@ -278,6 +311,17 @@ public class MainService extends AccessibilityService {
         } else {
             jsonSilentPut(json, "error", "no instance");
         }
+
+        // TODO remove this code
+        /* =========== Demo code begin =========== */
+        //如何获取当前app
+        Integer cur_app_index = getApp();
+        Log.d(CONTEXT_LOG_TAG, "get app"+ cur_app_index);
+        //在前台中显示
+        JSONObject json_app = new JSONObject();
+        jsonSilentPut(json_app, "cur_app",  cur_app_index);
+        record("GET APP", "KeyEvent://" + event.getAction() + "/" + event.getKeyCode(), "", json_app.toString());
+        /* =========== Demo code end =========== */
 
         record("KeyEvent", "KeyEvent://" + event.getAction() + "/" + event.getKeyCode(), "", json.toString());
         return super.onKeyEvent(event);
@@ -419,5 +463,14 @@ public class MainService extends AccessibilityService {
         if (msg != null)
             intent.putExtra(EXTRA_MSG, msg);
         localBroadcastManager.sendBroadcast(intent);
+    }
+
+    ///<summary>获得当前app信息
+    ///返回0-4
+    // 如果当前app不在5个的范围内，返回5
+    public Integer getApp(){
+        if(AppPackageMap.containsKey(CurrentPackage))
+            return AppPackageMap.get(CurrentPackage);
+        return 5;
     }
 }
