@@ -1,25 +1,33 @@
 package com.ivolume.ivolume;
 
+import android.Manifest;
 import android.accessibilityservice.AccessibilityService;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.hardware.display.DisplayManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,14 +41,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntUnaryOperator;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 //import com.ivolume.ivolume.VolumeUpdater;
@@ -51,6 +63,8 @@ public class MainService extends AccessibilityService {
     static final public String ACTION_RECORD_MSG = "com.ivolume.ivolume.mainservice.record_msg";
     static final public String EXTRA_MSG = "com.ivolume.ivolume.mainservice.msg";
     static final public String CONTEXT_LOG_TAG = "mainservice.getcontext.log";
+    static final public String LOCATION_LOG_TAG = "mainservice.getlocation.log";
+    static final public String BLUETOOTH_LOG_TAG = "mainservice.getbluetooth.log";
 
     private final AtomicInteger mLogID = new AtomicInteger(0);
     private final IntUnaryOperator operator = x -> (x < 999) ? (x + 1) : 0;
@@ -110,7 +124,7 @@ public class MainService extends AccessibilityService {
 
     //监测APP
     private static String CurrentPackage; //当前app
-    static Map<String, Integer> AppPackageMap = new HashMap<String, Integer>(){{
+    static Map<String, Integer> AppPackageMap = new HashMap<String, Integer>() {{
         put("com.tencent.wemeet.app", 0); //微信
         put("com.tencent.mm", 1);  //腾讯会议
         put("tv.danmaku.bili", 2);  //b站
@@ -168,6 +182,15 @@ public class MainService extends AccessibilityService {
                         }
                         jsonSilentPut(json, "displays", states);
                     }
+                    break;
+                case Intent.ACTION_HEADSET_PLUG:
+                    Log.d(BLUETOOTH_LOG_TAG,"headset plug in");
+                    break;
+                case BluetoothDevice.ACTION_ACL_CONNECTED:
+                    Log.d(BLUETOOTH_LOG_TAG,"bluetooth headset plug in");
+                    break;
+                case BluetoothDevice.ACTION_ACL_DISCONNECTED:
+                    Log.d(BLUETOOTH_LOG_TAG,"bluetooth headset plug out");
                     break;
             }
 
@@ -237,7 +260,7 @@ public class MainService extends AccessibilityService {
             jsonSilentPut(json, "package", packageName);
 
             // record data
-            record("ContentChange", key, tag, json.toString());
+//            record("ContentChange", key, tag, json.toString());
 
 //            volumeUpdater.update();
         }
@@ -247,13 +270,124 @@ public class MainService extends AccessibilityService {
         volumeUpdater = new VolumeUpdater(this);
     }
 
+    //location info
+    protected LocationManager locationManager;
+    protected Location mlocation;
+
     @Override
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
         CurrentPackage = "";
+        Log.d("TEST","step1");
         initialize();
+
+        //检测位置变化
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //首先判断网络是否可用
+        if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        } else {
+            //将手机位置服务中--基于网络的位置服务关闭后，则获取不到数据
+            showgps("NETWORK_PROVIDER不可用，无法获取GPS信息！");
+        }
+        //获取当前设备说有的Provider
+        List<String> allprovides = locationManager.getAllProviders();
+        for (String allprovide : allprovides) {
+            Log.d("Test", allprovide);
+        }
+        Log.d("TEST","step2");
+        //检测设备
+        checkConnectState();
+    }
+
+    private int gps2place(double Latitude, double Longitude) {
+        // TODO
+        // 操场
+        // 六教
+        // 李文正馆
+        // 其他
+        return 0;
+    }
+
+    protected final LocationListener locationListener = new LocationListener() {
+
+        // Provider的在可用、暂时不可用和无服务三个状态直接切换时触发此函数
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            // TODO Auto-generated method stub
+            showgps("status" + status);
+        }
+
+        //  Provider被enable时触发此函数，比如GPS被打开
+        @Override
+        public void onProviderEnabled(String provider) {
+            // TODO Auto-generated method stub
+            showgps("enabled");
+        }
+
+        // Provider被disable时触发此函数，比如GPS被关闭
+        @Override
+        public void onProviderDisabled(String provider) {
+            // TODO Auto-generated method stub
+            showgps("disabled");
+        }
+
+        //当坐标改变时触发此函数
+        @Override
+        public void onLocationChanged(Location location) {
+            // TODO Auto-generated method stub
+            mlocation = location;
+            //解除监听
+            locationManager.removeUpdates(locationListener);
+            double lat = mlocation.getLatitude(), longti = mlocation.getLongitude();
+            String gpsinfo = "GPS: Latitude=" + lat + "   Longitude=" + longti + "   place:" + gps2place(lat, longti);
+            showgps(gpsinfo);
+        }
+    };
+
+    private void checkConnectState() {
+        ArrayList<BluetoothDevice> deviceList = new ArrayList<BluetoothDevice>();
+
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        Class<BluetoothAdapter> bluetoothAdapterClass = BluetoothAdapter.class;//得到BluetoothAdapter的Class对象
+        try {
+            //得到连接状态的方法
+            Method method = bluetoothAdapterClass.getDeclaredMethod("getConnectionState", (Class[]) null);
+            //打开权限
+            method.setAccessible(true);
+            int state = (Integer) method.invoke(adapter, (Object[]) null);
+            if (state == BluetoothAdapter.STATE_CONNECTED) {
+                Log.d("BLUETOOTH", "BluetoothAdapter.STATE_CONNECTED");
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                Set<BluetoothDevice> devices = adapter.getBondedDevices();
+                Log.d("BLUETOOTH", "devices:" + devices.size());
+
+                for (BluetoothDevice device : devices) {
+                    Method isConnectedMethod = BluetoothDevice.class.getDeclaredMethod("isConnected", (Class[]) null);
+                    method.setAccessible(true);
+                    boolean isConnected = (Boolean) isConnectedMethod.invoke(device, (Object[]) null);
+                    if (isConnected) {
+                        Log.d("BLUETOOTH", "connected:" + device.getName());
+                        deviceList.add(device);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void showgps(String info){
+        Log.d(LOCATION_LOG_TAG, "location" + info);
+        broadcast("location" + info);
     }
 
     @Override
@@ -274,6 +408,8 @@ public class MainService extends AccessibilityService {
         if(type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED){
             String tmpPackage = event.getPackageName()==null? "": event.getPackageName().toString();
             if(!tmpPackage.equals(CurrentPackage)){
+//                CurrentPackage = tmpPackage;
+//                Log.d(CONTEXT_LOG_TAG, "CurrentPackage name:" + tmpPackage);
                 //当前app包名改变时
                 //只针对AppPackageMap的5个app进行处理，忽略其他包
                 if(AppPackageMap.containsKey(tmpPackage)) {
@@ -286,6 +422,8 @@ public class MainService extends AccessibilityService {
                 }
             }
         }
+
+
     }
 
     @Override

@@ -30,6 +30,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
+
+
 @RequiresApi(api = Build.VERSION_CODES.S)
 public class MainActivity extends AppCompatActivity {
 
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     // Append a string to a TextView as a new line
     // 1. erase excessive lines
     // 2. scroll to the bottom if needed
-    private void addMessage(TextView mTextView, String msg) {
+    public void addMessage(TextView mTextView, String msg) {
         // append the new string
         mTextView.append("\n" + msg);
 
@@ -167,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
