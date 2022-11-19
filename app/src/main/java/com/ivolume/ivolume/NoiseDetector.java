@@ -81,6 +81,7 @@ import android.util.Log;
                 mAudioRecord = null;
             }
         }).start();
+         isGetVoiceRun = false;
     }
      public double getNoise() {  // main entrance, call this on
         get_volume();
