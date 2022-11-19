@@ -447,25 +447,6 @@ public class MainService extends AccessibilityService {
         jsonSilentPut(json, "package", packageName);
         jsonSilentPut(json, "keycodeString", KeyEvent.keyCodeToString(event.getKeyCode()));
 
-        // TODO remove this code
-        if (volumeUpdater != null) {
-            // TODO change param to real context
-            volumeUpdater.update(0, 0, false, 0);
-        } else {
-            jsonSilentPut(json, "error", "no instance");
-        }
-
-        // TODO remove this code
-        /* =========== Demo code begin =========== */
-        //如何获取当前app
-        Integer cur_app_index = getApp();
-        Log.d(CONTEXT_LOG_TAG, "get app"+ cur_app_index);
-        //在前台中显示
-        JSONObject json_app = new JSONObject();
-        jsonSilentPut(json_app, "cur_app",  cur_app_index);
-        record("GET APP", "KeyEvent://" + event.getAction() + "/" + event.getKeyCode(), "", json_app.toString());
-        /* =========== Demo code end =========== */
-
         record("KeyEvent", "KeyEvent://" + event.getAction() + "/" + event.getKeyCode(), "", json.toString());
         return super.onKeyEvent(event);
     }
