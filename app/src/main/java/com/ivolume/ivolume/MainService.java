@@ -93,6 +93,8 @@ public class MainService extends AccessibilityService {
     String filename = "log.tsv";
     FileWriter writer;
     int brightness;
+    private int gps;
+    private boolean plugged;
     static final HashMap<String, Integer> volume = new HashMap<>();
 
     static {
@@ -125,8 +127,8 @@ public class MainService extends AccessibilityService {
     //监测APP
     private static String CurrentPackage; //当前app
     static Map<String, Integer> AppPackageMap = new HashMap<String, Integer>() {{
-        put("com.tencent.wemeet.app", 0); //微信
-        put("com.tencent.mm", 1);  //腾讯会议
+        put("com.tencent.wemeet.app", 0); //腾讯会议
+//        put("com.tencent.mm", 1);  //微信
         put("tv.danmaku.bili", 2);  //b站
         put("com.netease.cloudmusic", 3);  //网易云
         put("cn.ledongli.ldl", 4);  //乐动力
@@ -185,12 +187,18 @@ public class MainService extends AccessibilityService {
                     break;
                 case Intent.ACTION_HEADSET_PLUG:
                     Log.d(BLUETOOTH_LOG_TAG,"headset plug in");
+                    plugged = true;
+                    volumeUpdater.update(gps, getApp(), true, 0);  // TODO noise
                     break;
                 case BluetoothDevice.ACTION_ACL_CONNECTED:
                     Log.d(BLUETOOTH_LOG_TAG,"bluetooth headset plug in");
+                    plugged = true;
+                    volumeUpdater.update(gps, getApp(), true, 0);  // TODO noise
                     break;
                 case BluetoothDevice.ACTION_ACL_DISCONNECTED:
                     Log.d(BLUETOOTH_LOG_TAG,"bluetooth headset plug out");
+                    plugged = false;
+                    volumeUpdater.update(gps, getApp(), false, 0);  // TODO noise
                     break;
             }
 
@@ -319,34 +327,32 @@ public class MainService extends AccessibilityService {
         // Provider的在可用、暂时不可用和无服务三个状态直接切换时触发此函数
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-            // TODO Auto-generated method stub
             showgps("status" + status);
         }
 
         //  Provider被enable时触发此函数，比如GPS被打开
         @Override
         public void onProviderEnabled(String provider) {
-            // TODO Auto-generated method stub
             showgps("enabled");
         }
 
         // Provider被disable时触发此函数，比如GPS被关闭
         @Override
         public void onProviderDisabled(String provider) {
-            // TODO Auto-generated method stub
             showgps("disabled");
         }
 
         //当坐标改变时触发此函数
         @Override
         public void onLocationChanged(Location location) {
-            // TODO Auto-generated method stub
             mlocation = location;
             //解除监听
             locationManager.removeUpdates(locationListener);
             double lat = mlocation.getLatitude(), longti = mlocation.getLongitude();
             String gpsinfo = "GPS: Latitude=" + lat + "   Longitude=" + longti + "   place:" + gps2place(lat, longti);
             showgps(gpsinfo);
+            gps = gps2place(lat, longti);
+            volumeUpdater.update(gps, getApp(), plugged, 0);  // TODO noise
         }
     };
 
@@ -416,9 +422,8 @@ public class MainService extends AccessibilityService {
                     CurrentPackage = tmpPackage;
                     int cur_index = AppPackageMap.get(CurrentPackage);
                     Log.d(CONTEXT_LOG_TAG, "CurrentPackage changed, name:" + CurrentPackage
-                    + ", index:" + Integer.toString(cur_index));
-                    //TODO get other context & update volume
-
+                    + ", index:" + cur_index);
+                    volumeUpdater.update(gps, cur_index, plugged, 0);  // TODO noise
                 }
             }
         }
@@ -441,25 +446,6 @@ public class MainService extends AccessibilityService {
         jsonSilentPut(json, "downTime", event.getDownTime());
         jsonSilentPut(json, "package", packageName);
         jsonSilentPut(json, "keycodeString", KeyEvent.keyCodeToString(event.getKeyCode()));
-
-        // TODO remove this code
-        if (volumeUpdater != null) {
-            // TODO change param to real context
-            volumeUpdater.update(0, 0, false, 0);
-        } else {
-            jsonSilentPut(json, "error", "no instance");
-        }
-
-        // TODO remove this code
-        /* =========== Demo code begin =========== */
-        //如何获取当前app
-        Integer cur_app_index = getApp();
-        Log.d(CONTEXT_LOG_TAG, "get app"+ cur_app_index);
-        //在前台中显示
-        JSONObject json_app = new JSONObject();
-        jsonSilentPut(json_app, "cur_app",  cur_app_index);
-        record("GET APP", "KeyEvent://" + event.getAction() + "/" + event.getKeyCode(), "", json_app.toString());
-        /* =========== Demo code end =========== */
 
         record("KeyEvent", "KeyEvent://" + event.getAction() + "/" + event.getKeyCode(), "", json.toString());
         return super.onKeyEvent(event);
