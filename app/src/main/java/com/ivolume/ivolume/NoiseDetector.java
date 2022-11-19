@@ -82,7 +82,7 @@ import android.util.Log;
             }
         }).start();
     }
-     public  double getNoise() {  // main entrance, call this on
+     public double getNoise() {  // main entrance, call this on
         get_volume();
         return volume;
      }
