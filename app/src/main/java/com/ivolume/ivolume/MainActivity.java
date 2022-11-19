@@ -34,6 +34,7 @@ import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.S)
 public class MainActivity extends AppCompatActivity {
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private static final String[] PERMISSIONS = {
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -242,5 +243,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         terminate();
         super.onDestroy();
+    }
+
+    public void launchSecondActivity(View view) {
+        Intent intent = new Intent(this, Questionnaire_Activity.class);
+        Log.d(LOG_TAG, "Button clicked!");
+        startActivity(intent);
     }
 }
