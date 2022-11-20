@@ -42,22 +42,32 @@ class ContextInfo {
 
 
 class NoiseAdjuster {
+    // TODO decide init parameter through experiment
     private double noise_a_plugged = 0;
-    private double noise_b_plugged = 0;
+    private final double noise_b_plugged = 0;
     private double noise_a_unplugged = 0;
-    private double noise_b_unplugged = 0;
+    private final double noise_b_unplugged = 0;
+    private final static double lambda = 0.5;
 
-    // f(noise) = round(a * noise + b)
+    // f(noise) = round(a * (noise + b))
     public int adjust(double noise, boolean plugged) {
-        return (int) Math.round((plugged ? noise_a_plugged : noise_a_unplugged) * noise
-                + (plugged ? noise_b_plugged : noise_b_unplugged));
+        return (int) Math.round((plugged ? noise_a_plugged : noise_a_unplugged)
+                * (noise + (plugged ? noise_b_plugged : noise_b_unplugged)));
+    }
+
+    public void feedback(double noise, int delta_volume, boolean plugged) {
+        if (plugged) {
+            noise_a_plugged += noise_a_plugged * lambda * delta_volume / (noise + noise_b_plugged);
+        } else {
+            noise_a_unplugged += noise_a_unplugged * lambda * delta_volume / (noise + noise_b_unplugged);
+        }
     }
 }
 
 
 public class VolumeUpdater extends Service {
     public static VolumeUpdater mVolumeUpdater;
-    private AudioManager mAudioManager;
+//    private AudioManager mAudioManager;
     private final HashMap<ContextInfo, Integer> mMap;
     private final NoiseAdjuster mNoiseAdjuster;
     private final static double lambda = 0.5;
@@ -85,13 +95,11 @@ public class VolumeUpdater extends Service {
         super.onCreate();
     }
 
-    public void updateTable(Context context, int gps, int app, boolean plugged, double noise, int qa_result) {
-        if (mAudioManager == null) {
-            mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        }
+    public void feedback(Context context, int gps, int app, boolean plugged, double noise, int qa_result) {
+        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         // single entry
         Integer old_target = this.mMap.get(new ContextInfo(gps, app, plugged));
-        int current_volume = this.mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int current_volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         int current_target = current_volume - this.mNoiseAdjuster.adjust(noise, plugged);
         if (old_target != null) {
             int new_target = (int) Math.round(current_target * lambda + old_target * (1 - lambda));
@@ -133,7 +141,7 @@ public class VolumeUpdater extends Service {
                 }
                 break;
             case 3:  // noise
-
+                this.mNoiseAdjuster.feedback(noise, current_target - old_target, plugged);
                 break;
             default:
                 break;
@@ -142,11 +150,9 @@ public class VolumeUpdater extends Service {
 
     // new_volume = target + f(noise, plugged)
     public void update(Context context, int gps, int app, boolean plugged, float noise) {
-        if (mAudioManager == null) {
-            mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        }
+        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         Integer target = this.mMap.get(new ContextInfo(gps, app, plugged));
-        int current_volume = this.mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int current_volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         if (target == null) {  // does not contain current context
             this.mMap.put(new ContextInfo(gps, app, plugged), current_volume - this.mNoiseAdjuster.adjust(noise, plugged));
             Log.d("VU", String.format("add new context <gps=%d, app=%d, plugged=%b, noise=%.2f>, now contains %d entries",
@@ -158,7 +164,7 @@ public class VolumeUpdater extends Service {
             int direction = target > current_volume ? AudioManager.ADJUST_RAISE
                     : AudioManager.ADJUST_LOWER;
             for (int i = 0; i < steps; ++i) {
-                mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, direction,
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, direction,
                         AudioManager.FLAG_SHOW_UI);
             }
             Log.d("VU", String.format("map context <gps=%d, app=%d, plugged=%b, noise=%.2f> to volume <%d>",
