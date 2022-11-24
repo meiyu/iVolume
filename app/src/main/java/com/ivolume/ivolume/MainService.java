@@ -95,6 +95,7 @@ public class MainService extends AccessibilityService {
     int brightness;
     private int gps;
     private boolean plugged;
+    private int curr_volume;
     static final HashMap<String, Integer> volume = new HashMap<>();
 
     static {
@@ -122,7 +123,6 @@ public class MainService extends AccessibilityService {
 
     Context context;
     LocalBroadcastManager localBroadcastManager;
-    VolumeUpdater volumeUpdater;
 
     //监测APP
     private static String CurrentPackage; //当前app
@@ -188,20 +188,18 @@ public class MainService extends AccessibilityService {
                 case Intent.ACTION_HEADSET_PLUG:
                     Log.d(BLUETOOTH_LOG_TAG,"headset plug in");
                     plugged = true;
-                    volumeUpdater.update(gps, getApp(), true, 0);  // TODO noise
                     break;
                 case BluetoothDevice.ACTION_ACL_CONNECTED:
                     Log.d(BLUETOOTH_LOG_TAG,"bluetooth headset plug in");
                     plugged = true;
-                    volumeUpdater.update(gps, getApp(), true, 0);  // TODO noise
                     break;
                 case BluetoothDevice.ACTION_ACL_DISCONNECTED:
                     Log.d(BLUETOOTH_LOG_TAG,"bluetooth headset plug out");
                     plugged = false;
-                    volumeUpdater.update(gps, getApp(), false, 0);  // TODO noise
                     break;
             }
 
+            doUpdate();
             jsonSilentPut(json, "package", packageName);
 
             // record data
@@ -275,7 +273,6 @@ public class MainService extends AccessibilityService {
     };
 
     public MainService() {
-        volumeUpdater = new VolumeUpdater(this);
     }
 
     //location info
@@ -352,9 +349,13 @@ public class MainService extends AccessibilityService {
             String gpsinfo = "GPS: Latitude=" + lat + "   Longitude=" + longti + "   place:" + gps2place(lat, longti);
             showgps(gpsinfo);
             gps = gps2place(lat, longti);
-            volumeUpdater.update(gps, getApp(), plugged, 0);  // TODO noise
+            doUpdate();
         }
     };
+
+    private void doUpdate() {
+        VolumeUpdater.getInstance().update(this, gps, getApp(), plugged, 0);  // TODO noise
+    }
 
     private void checkConnectState() {
         ArrayList<BluetoothDevice> deviceList = new ArrayList<BluetoothDevice>();
@@ -423,7 +424,7 @@ public class MainService extends AccessibilityService {
                     int cur_index = AppPackageMap.get(CurrentPackage);
                     Log.d(CONTEXT_LOG_TAG, "CurrentPackage changed, name:" + CurrentPackage
                     + ", index:" + cur_index);
-                    volumeUpdater.update(gps, cur_index, plugged, 0);  // TODO noise
+                    doUpdate();
                 }
             }
         }
