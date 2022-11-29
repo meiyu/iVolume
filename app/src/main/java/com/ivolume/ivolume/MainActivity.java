@@ -12,6 +12,7 @@ import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -71,9 +72,9 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void createNotification(String title, String content) {
-        //Intent intent = new Intent(this, AlertDetails.class);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        //PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+//        Intent intent = new Intent(this, AlertDetails.class);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "问卷通知")
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle(title)
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                         .bigText(content))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 // Set the intent that will fire when the user taps the notification
-                //.setContentIntent(pendingIntent)
+//                .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
         createNotificationChannel();

