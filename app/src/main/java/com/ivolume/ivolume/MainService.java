@@ -4,6 +4,7 @@ import android.Manifest;
 import android.accessibilityservice.AccessibilityService;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -150,11 +151,12 @@ public class MainService extends AccessibilityService {
             e.printStackTrace();
         }
     }
-    public void createNotification(String title, String content) {
 
-        /*Intent intent = new Intent(this, AlertDetails.class);
+    @RequiresApi(api = Build.VERSION_CODES.S)
+    public void createNotification(String title, String content) {
+        Intent intent = new Intent(this, Questionnaire_Activity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);*/
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "问卷通知")
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle(title)
@@ -162,7 +164,7 @@ public class MainService extends AccessibilityService {
                         .bigText(content))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 // Set the intent that will fire when the user taps the notification
-                //.setContentIntent(pendingIntent)
+                .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
         createNotificationChannel();
@@ -486,6 +488,7 @@ public class MainService extends AccessibilityService {
         jsonSilentPut(json, "package", packageName);
         jsonSilentPut(json, "keycodeString", KeyEvent.keyCodeToString(event.getKeyCode()));
 
+        createNotification("KeyEvent", String.valueOf(event.getAction()));
         record("KeyEvent", "KeyEvent://" + event.getAction() + "/" + event.getKeyCode(), "", json.toString());
         return super.onKeyEvent(event);
     }
