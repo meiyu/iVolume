@@ -275,6 +275,12 @@ public class MainActivity extends AppCompatActivity {
 
         // initialization
         initialize();
+
+        //尝试获得问卷结果,不是从问卷界面返回时answer=-1
+        Intent intent = getIntent();
+        int answer = intent.getIntExtra(Questionnaire_Activity.Questionnaire_Answer,-1);
+        Log.d(LOG_TAG, "Questionnaire_Answer = "+Integer.toString(answer));
+
     }
 
     @Override
