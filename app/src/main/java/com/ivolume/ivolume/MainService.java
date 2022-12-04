@@ -156,7 +156,7 @@ public class MainService extends AccessibilityService {
     public void createNotification(String title, String content) {
         Intent intent = new Intent(this, Questionnaire_Activity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "问卷通知")
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle(title)
@@ -478,6 +478,7 @@ public class MainService extends AccessibilityService {
     }
 
     @Override
+    @RequiresApi(api = Build.VERSION_CODES.S)
     protected boolean onKeyEvent(KeyEvent event) {
         JSONObject json = new JSONObject();
         jsonSilentPut(json, "code", event.getKeyCode());
