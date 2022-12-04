@@ -2,6 +2,9 @@ package com.ivolume.ivolume;
 
 import android.Manifest;
 import android.accessibilityservice.AccessibilityService;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -53,6 +56,8 @@ import java.util.function.IntUnaryOperator;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 //import com.ivolume.ivolume.VolumeUpdater;
@@ -144,6 +149,42 @@ public class MainService extends AccessibilityService {
             json.put(key, value);
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.S)
+    public void createNotification(String title, String content) {
+        Intent intent = new Intent(this, Questionnaire_Activity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "问卷通知")
+                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setContentTitle(title)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(content))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                // Set the intent that will fire when the user taps the notification
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        createNotificationChannel();
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.app_name);
+            String description = getString(R.string.app_name);
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel("问卷通知", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 
@@ -438,6 +479,7 @@ public class MainService extends AccessibilityService {
     }
 
     @Override
+    @RequiresApi(api = Build.VERSION_CODES.S)
     protected boolean onKeyEvent(KeyEvent event) {
         JSONObject json = new JSONObject();
         jsonSilentPut(json, "code", event.getKeyCode());
@@ -448,6 +490,7 @@ public class MainService extends AccessibilityService {
         jsonSilentPut(json, "package", packageName);
         jsonSilentPut(json, "keycodeString", KeyEvent.keyCodeToString(event.getKeyCode()));
 
+        createNotification("KeyEvent", String.valueOf(event.getAction()));
         record("KeyEvent", "KeyEvent://" + event.getAction() + "/" + event.getKeyCode(), "", json.toString());
         return super.onKeyEvent(event);
     }
@@ -593,8 +636,8 @@ public class MainService extends AccessibilityService {
     ///<summary>获得当前app信息
     ///返回0-4
     // 如果当前app不在5个的范围内，返回5
-    public Integer getApp(){
-        if(AppPackageMap.containsKey(CurrentPackage))
+    public Integer getApp() {
+        if (AppPackageMap.containsKey(CurrentPackage))
             return AppPackageMap.get(CurrentPackage);
         return 5;
     }
