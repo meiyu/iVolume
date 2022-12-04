@@ -9,4 +9,12 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="finish">Finish</string>
+    <string name="upload_answer">提交</string>
+    <string name="answer_app">切换到当前app时，音量普遍设置得过大/小</string>
+    <string name="answer_location">在当前地点，音量普遍设置得过大/小</string>
+    <string name="answer_noise">环境噪音变化时，音量调节幅度过大/小</string>
+    <string name="answer_device">接入/断开耳机后，音量调节幅度过大/小</string>
+    <string name="answer_others">其它</string>
+    <string name="question">请问什么因素主导您进行此次音量调节？</string>
 </resources>
