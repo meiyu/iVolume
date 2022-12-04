@@ -43,10 +43,10 @@ class ContextInfo {
 
 class NoiseAdjuster {
     // TODO decide init parameter through experiment
-    private double noise_a_plugged = 0;
-    private final double noise_b_plugged = 0;
-    private double noise_a_unplugged = 0;
-    private final double noise_b_unplugged = 0;
+    private double noise_a_plugged = 0.2;
+    private final double noise_b_plugged = -40;
+    private double noise_a_unplugged = 0.2;
+    private final double noise_b_unplugged = -40;
     private final static double lambda = 0.5;
 
     // f(noise) = round(a * (noise + b))
@@ -149,13 +149,13 @@ public class VolumeUpdater extends Service {
     }
 
     // new_volume = target + f(noise, plugged)
-    public void update(Context context, int gps, int app, boolean plugged, float noise) {
+    public void update(Context context, int gps, int app, boolean plugged, double noise) {
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         Integer target = this.mMap.get(new ContextInfo(gps, app, plugged));
         int current_volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         if (target == null) {  // does not contain current context
             this.mMap.put(new ContextInfo(gps, app, plugged), current_volume - this.mNoiseAdjuster.adjust(noise, plugged));
-            Log.d("VU", String.format("add new context <gps=%d, app=%d, plugged=%b, noise=%.2f>, now contains %d entries",
+            Log.d("VU", String.format("add new context <gps=%d, app=%d, plugged=%b> (noise=%.2f), now contains %d entries",
                     gps, app, plugged, noise, this.mMap.size()));
 
         } else {
@@ -167,7 +167,7 @@ public class VolumeUpdater extends Service {
                 audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, direction,
                         AudioManager.FLAG_SHOW_UI);
             }
-            Log.d("VU", String.format("map context <gps=%d, app=%d, plugged=%b, noise=%.2f> to volume <%d>",
+            Log.d("VU", String.format("map context <gps=%d, app=%d, plugged=%b> (noise=%.2f) to volume <%d>",
                     gps, app, plugged, noise, target));
         }
     }
