@@ -28,8 +28,7 @@ public class Questionnaire_Activity extends AppCompatActivity {
         int gps = MainService.gps;
         int app_index = MainService.getApp();
         boolean plugged = MainService.plugged;
-        double noise = 0;
-        //todo get noise
+        double noise = MainService.noise;
         VolumeUpdater.getInstance().feedback(this, gps, app_index, plugged, noise, answer);
 
         //切换到MainActivity

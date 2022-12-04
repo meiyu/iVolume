@@ -100,6 +100,7 @@ public class MainService extends AccessibilityService {
     int brightness;
     public static int gps;
     public static boolean plugged;
+    public static double noise;
     private int curr_volume;
     static final HashMap<String, Integer> volume = new HashMap<>();
 
@@ -371,6 +372,8 @@ public class MainService extends AccessibilityService {
                     }
                     if(volume_change_pending){
                         //完成一次音量调节事件，弹出通知
+                        NoiseDetector noiseDetector = new NoiseDetector();
+                        noise = noiseDetector.getNoise();
                         volume_change_pending = false;
                         createNotification("检测到您的音量调节", "为了更好地为您服务，邀请您填写反馈问卷！");
                     }
