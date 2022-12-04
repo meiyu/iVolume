@@ -424,7 +424,8 @@ public class MainService extends AccessibilityService {
     };
 
     private void doUpdate() {
-        VolumeUpdater.getInstance().update(this, gps, getApp(), plugged, 0);  // TODO noise
+        NoiseDetector noiseDetector = new NoiseDetector();
+        VolumeUpdater.getInstance().update(this, gps, getApp(), plugged, noiseDetector.getNoise());
     }
 
     private void checkConnectState() {
