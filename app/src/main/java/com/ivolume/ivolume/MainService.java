@@ -98,8 +98,8 @@ public class MainService extends AccessibilityService {
     String filename = "log.tsv";
     FileWriter writer;
     int brightness;
-    private int gps;
-    private boolean plugged;
+    public static int gps;
+    public static boolean plugged;
     private int curr_volume;
     static final HashMap<String, Integer> volume = new HashMap<>();
 
@@ -130,8 +130,8 @@ public class MainService extends AccessibilityService {
     LocalBroadcastManager localBroadcastManager;
 
     //监测APP
-    private static String CurrentPackage; //当前app
-    static Map<String, Integer> AppPackageMap = new HashMap<String, Integer>() {{
+    public static String CurrentPackage; //当前app
+    public static Map<String, Integer> AppPackageMap = new HashMap<String, Integer>() {{
         put("com.tencent.wemeet.app", 0); //腾讯会议
 //        put("com.tencent.mm", 1);  //微信
         put("tv.danmaku.bili", 2);  //b站
@@ -156,7 +156,7 @@ public class MainService extends AccessibilityService {
     public void createNotification(String title, String content) {
         Intent intent = new Intent(this, Questionnaire_Activity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "问卷通知")
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle(title)
@@ -456,14 +456,12 @@ public class MainService extends AccessibilityService {
         if(type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED){
             String tmpPackage = event.getPackageName()==null? "": event.getPackageName().toString();
             if(!tmpPackage.equals(CurrentPackage)){
-//                CurrentPackage = tmpPackage;
-//                Log.d(CONTEXT_LOG_TAG, "CurrentPackage name:" + tmpPackage);
                 //当前app包名改变时
                 //只针对AppPackageMap的5个app进行处理，忽略其他包
                 if(AppPackageMap.containsKey(tmpPackage)) {
                     CurrentPackage = tmpPackage;
                     int cur_index = AppPackageMap.get(CurrentPackage);
-                    Log.d(CONTEXT_LOG_TAG, "CurrentPackage changed, name:" + CurrentPackage
+                    Log.d("app_log_tag", "CurrentPackage changed, name:" + CurrentPackage
                     + ", index:" + cur_index);
                     doUpdate();
                 }
@@ -480,6 +478,7 @@ public class MainService extends AccessibilityService {
 
     @RequiresApi(api = Build.VERSION_CODES.S)
     @Override
+    @RequiresApi(api = Build.VERSION_CODES.S)
     protected boolean onKeyEvent(KeyEvent event) {
         NoiseDetector noiseDetector = new NoiseDetector();
         double noise = noiseDetector.getNoise();
@@ -639,7 +638,7 @@ public class MainService extends AccessibilityService {
     ///<summary>获得当前app信息
     ///返回0-4
     // 如果当前app不在5个的范围内，返回5
-    public Integer getApp() {
+    public static Integer getApp() {
         if (AppPackageMap.containsKey(CurrentPackage))
             return AppPackageMap.get(CurrentPackage);
         return 5;

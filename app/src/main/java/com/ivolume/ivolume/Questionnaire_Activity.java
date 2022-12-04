@@ -24,8 +24,16 @@ public class Questionnaire_Activity extends AppCompatActivity {
 
     ///点击提交按钮时
     public void launchSecondActivity(View view) {
+        //调节音量设置
+        int gps = MainService.gps;
+        int app_index = MainService.getApp();
+        boolean plugged = MainService.plugged;
+        double noise = 0;
+        //todo get noise
+        VolumeUpdater.getInstance().feedback(this, gps, app_index, plugged, noise, answer);
+
+        //切换到MainActivity
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(Questionnaire_Answer, answer);
         Log.d(LOG_TAG, "Button clicked! Jump to MainActivity");
         startActivity(intent);
     }
