@@ -51,11 +51,14 @@ import android.util.Log;
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Log.d("Audio", "Start recording");
                 mAudioRecord.startRecording();
                 short[] buffer = new short[BUFFER_SIZE];
                 int noise_count = 1;
                 volume = 0;
-                while (isGetVoiceRun && noise_count <= 10) {
+                Log.d("Audio", String.format("%b %d", isGetVoiceRun, noise_count));
+                while (noise_count <= 10) {
+                    Log.d("Audio", "is get voice run");
                     int r = mAudioRecord.read(buffer, 0, BUFFER_SIZE);
                     long v = 0;
                     for (int i = 0; i < buffer.length; i++) {
@@ -68,6 +71,7 @@ import android.util.Log;
                     Log.d(TAG, "db level:" + volume_level);
                     // 大概一秒十次
                     synchronized (mLock) {
+                        Log.d("Audio", "syn mlock");
                         try {
                             mLock.wait(100);
                             noise_count ++;
@@ -79,9 +83,10 @@ import android.util.Log;
                 mAudioRecord.stop();
                 mAudioRecord.release();
                 mAudioRecord = null;
+                Log.d("Audio", "End recording");
             }
         }).start();
-         isGetVoiceRun = false;
+        isGetVoiceRun = false;
     }
      public double getNoise() {  // main entrance, call this on
         get_volume();

@@ -478,8 +478,12 @@ public class MainService extends AccessibilityService {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.S)
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
+        NoiseDetector noiseDetector = new NoiseDetector();
+        double noise = noiseDetector.getNoise();
+        Log.d("noise", Double.toString(noise));
         JSONObject json = new JSONObject();
         jsonSilentPut(json, "code", event.getKeyCode());
         jsonSilentPut(json, "action", event.getAction());
@@ -489,7 +493,7 @@ public class MainService extends AccessibilityService {
         jsonSilentPut(json, "package", packageName);
         jsonSilentPut(json, "keycodeString", KeyEvent.keyCodeToString(event.getKeyCode()));
 
-        createNotification("KeyEvent", String.valueOf(event.getAction()));
+//        createNotification("KeyEvent", String.valueOf(event.getAction()));
         record("KeyEvent", "KeyEvent://" + event.getAction() + "/" + event.getKeyCode(), "", json.toString());
         return super.onKeyEvent(event);
     }
