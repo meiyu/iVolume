@@ -100,6 +100,7 @@ public class MainService extends AccessibilityService {
     int brightness;
     public static int gps;
     public static boolean plugged;
+    public static double noise;
     private int curr_volume;
     static final HashMap<String, Integer> volume = new HashMap<>();
 
@@ -138,6 +139,10 @@ public class MainService extends AccessibilityService {
         put("com.netease.cloudmusic", 3);  //网易云
         put("cn.ledongli.ldl", 4);  //乐动力
     }};
+
+    //这1s内是否进行了音量调节
+    public static boolean volume_key_pressed = false;
+    public static boolean volume_change_pending = false;
 
 
     // TODO judge whether context changed, if so:
@@ -349,6 +354,33 @@ public class MainService extends AccessibilityService {
         Log.d("TEST","step2");
         //检测设备
         checkConnectState();
+
+        //合并音量调节事件
+        Thread key_merge_thread = new Thread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.S)
+            @Override
+            public void run() {
+                // 合并音量调节按键事件
+                while(true){
+                    while(volume_key_pressed){
+                        volume_key_pressed = false;
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if(volume_change_pending){
+                        //完成一次音量调节事件，弹出通知
+                        NoiseDetector noiseDetector = new NoiseDetector();
+                        noise = noiseDetector.getNoise();
+                        volume_change_pending = false;
+                        createNotification("检测到您的音量调节", "为了更好地为您服务，邀请您填写反馈问卷！");
+                    }
+                }
+            }
+        });
+        key_merge_thread.start();
     }
 
     private int gps2place(double Latitude, double Longitude) {
@@ -395,7 +427,8 @@ public class MainService extends AccessibilityService {
     };
 
     private void doUpdate() {
-        VolumeUpdater.getInstance().update(this, gps, getApp(), plugged, 0);  // TODO noise
+        NoiseDetector noiseDetector = new NoiseDetector();
+        VolumeUpdater.getInstance().update(this, gps, getApp(), plugged, noiseDetector.getNoise());
     }
 
     private void checkConnectState() {
@@ -479,6 +512,12 @@ public class MainService extends AccessibilityService {
     @Override
     @RequiresApi(api = Build.VERSION_CODES.S)
     protected boolean onKeyEvent(KeyEvent event) {
+        //24-volume_up 25-volume_down
+        if(event.getKeyCode() == 24 || event.getKeyCode() == 25){
+            Log.d("volume key", "volume up 1");
+            volume_key_pressed = true;
+            volume_change_pending = true;
+        }
         JSONObject json = new JSONObject();
         jsonSilentPut(json, "code", event.getKeyCode());
         jsonSilentPut(json, "action", event.getAction());
@@ -488,7 +527,7 @@ public class MainService extends AccessibilityService {
         jsonSilentPut(json, "package", packageName);
         jsonSilentPut(json, "keycodeString", KeyEvent.keyCodeToString(event.getKeyCode()));
 
-        createNotification("KeyEvent", String.valueOf(event.getAction()));
+//        createNotification("KeyEvent", String.valueOf(event.getAction()));
         record("KeyEvent", "KeyEvent://" + event.getAction() + "/" + event.getKeyCode(), "", json.toString());
         return super.onKeyEvent(event);
     }
