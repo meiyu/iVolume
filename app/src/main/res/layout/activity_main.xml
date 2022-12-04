@@ -26,7 +26,7 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello World!" />
+            android:text="iVolume" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -50,13 +50,6 @@
                 android:onClick="clickStopService"
                 android:text="Stop" />
 
-            <Button
-                android:id="@+id/button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="launchSecondActivity"
-                android:text="TestButton" />
         </LinearLayout>
 
         <TextView

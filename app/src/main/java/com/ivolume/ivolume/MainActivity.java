@@ -284,9 +284,4 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void launchSecondActivity(View view) {
-        Intent intent = new Intent(this, Questionnaire_Activity.class);
-        Log.d(LOG_TAG, "Button clicked!");
-        startActivity(intent);
-    }
 }
