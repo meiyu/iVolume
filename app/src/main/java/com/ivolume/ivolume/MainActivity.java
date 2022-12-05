@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
         //ui查找与设置
         noise_button = findViewById(R.id.noise_button);
         noise_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.noise_button_1,null));
-        //todo 改图片
+
         service_status_button = findViewById(R.id.service_status_button);
         service_status_text = findViewById(R.id.service_status_text);
         service_status_info_text = findViewById(R.id.service_status_info_text);
@@ -245,12 +245,12 @@ public class MainActivity extends AppCompatActivity {
 
         //恢复上次的服务状态
         if(VolumeUpdater.getInstance().getStatus()){
-            service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.noise_button_2,null));
+            service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.on_button,null));
             service_status_text.setText(service_status_text2);
             service_status_info_text.setText(service_status_info_text2);
         }
         else{
-            service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.noise_button_1,null));
+            service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.off_button,null));
             service_status_text.setText(service_status_text1);
             service_status_info_text.setText(service_status_info_text1);
         }
@@ -355,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
             //重新开始服务
             service_status = 1;
             //todo 改图片
-            service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.noise_button_2,null));
+            service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.on_button,null));
             service_status_text.setText(service_status_text2);
             service_status_info_text.setText(service_status_info_text2);
             //启动服务
@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
             //暂停服务
             service_status = 0;
             //todo 改图片
-            service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.noise_button_1,null));
+            service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.off_button,null));
             service_status_text.setText(service_status_text1);
             service_status_info_text.setText(service_status_info_text1);
             //暂停服务

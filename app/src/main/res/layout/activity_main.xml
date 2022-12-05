@@ -44,11 +44,14 @@
 
         <ImageButton
             android:id="@+id/service_status_button"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="416dp"
             android:backgroundTint="#00FFFFFF"
             android:onClick="onServiceStatusButtonClick"
-            app:srcCompat="@android:drawable/btn_radio" />
+            android:paddingHorizontal="50dp"
+            android:paddingVertical="50dp"
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/off_button" />
 
         <TextView
             android:id="@+id/service_status_text"
