@@ -73,6 +73,7 @@ public class VolumeUpdater extends Service {
     private final static double lambda = 0.5;
     private final static double mu = 0.2;
     private boolean service_status = false; //是否开启服务
+    private boolean noise_calibrate_done = false; //是否进行了噪音矫正
 
     public static VolumeUpdater getInstance() {
         if (mVolumeUpdater == null) {
@@ -183,5 +184,13 @@ public class VolumeUpdater extends Service {
 
     public boolean getStatus() {
         return this.service_status;
+    }
+
+    public void setNoiseCalibrateDone() {
+        this.noise_calibrate_done = true;
+    }
+
+    public boolean getNoiseCalibrateDone() {
+        return this.noise_calibrate_done;
     }
 }

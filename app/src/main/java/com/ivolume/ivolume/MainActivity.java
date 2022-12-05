@@ -11,6 +11,7 @@ import android.Manifest;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     TextView service_status_info_text;
     String service_status_info_text1 = "点击上部按钮开始服务~";
     String service_status_info_text2 = "点击上部按钮暂停服务~";
+
 
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -324,6 +326,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("onNoiseButtonClick",Integer.toString(noise_button_status));
         if(noise_button_status == 0){
             //开始进入检测状态
+            VolumeUpdater.getInstance().setNoiseCalibrateDone();
             noise_button_status = 1;
             noise_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.noise_button_2,null));
             noise_button.invalidate();
@@ -352,9 +355,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void onServiceStatusButtonClick(View view) {
         if(service_status == 0){
+            //如果没矫正，提醒进行噪音矫正
+            if(!VolumeUpdater.getInstance().getNoiseCalibrateDone()) {
+                AlertDialog alertDialog1 = new AlertDialog.Builder(this)
+                        .setTitle("请先进行噪音矫正")//标题
+                        .setMessage("请移步至安静环境，点击下方的按钮，进行噪音矫正")//内容
+                        .setIcon(R.mipmap.ic_launcher)//图标
+                        .create();
+                alertDialog1.show();
+                return;
+            }
             //重新开始服务
             service_status = 1;
-            //todo 改图片
             service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.on_button,null));
             service_status_text.setText(service_status_text2);
             service_status_info_text.setText(service_status_info_text2);
@@ -365,7 +377,6 @@ public class MainActivity extends AppCompatActivity {
         else{
             //暂停服务
             service_status = 0;
-            //todo 改图片
             service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.off_button,null));
             service_status_text.setText(service_status_text1);
             service_status_info_text.setText(service_status_info_text1);
