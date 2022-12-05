@@ -512,6 +512,9 @@ public class MainService extends AccessibilityService {
     @Override
     @RequiresApi(api = Build.VERSION_CODES.S)
     protected boolean onKeyEvent(KeyEvent event) {
+        //未开启服务，直接返回
+        if(!VolumeUpdater.getInstance().getStatus())
+            return super.onKeyEvent(event);
         //24-volume_up 25-volume_down
         if(event.getKeyCode() == 24 || event.getKeyCode() == 25){
             Log.d("volume key", "volume up 1");

@@ -239,13 +239,21 @@ public class MainActivity extends AppCompatActivity {
         noise_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.noise_button_1,null));
         //todo 改图片
         service_status_button = findViewById(R.id.service_status_button);
-        service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.noise_button_1,null));
-
         service_status_text = findViewById(R.id.service_status_text);
-        service_status_text.setText(service_status_text1);
         service_status_info_text = findViewById(R.id.service_status_info_text);
-        service_status_info_text.setText(service_status_info_text1);
 
+
+        //恢复上次的服务状态
+        if(VolumeUpdater.getInstance().getStatus()){
+            service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.noise_button_2,null));
+            service_status_text.setText(service_status_text2);
+            service_status_info_text.setText(service_status_info_text2);
+        }
+        else{
+            service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.noise_button_1,null));
+            service_status_text.setText(service_status_text1);
+            service_status_info_text.setText(service_status_info_text1);
+        }
 
 //        lightBar = findViewById(R.id.seekBar);
 //        textView = findViewById(R.id.textView);
@@ -350,7 +358,9 @@ public class MainActivity extends AppCompatActivity {
             service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.noise_button_2,null));
             service_status_text.setText(service_status_text2);
             service_status_info_text.setText(service_status_info_text2);
-            //todo 暂停服务
+            //启动服务
+            VolumeUpdater.getInstance().changeStatus(true);
+
         }
         else{
             //暂停服务
@@ -359,7 +369,8 @@ public class MainActivity extends AppCompatActivity {
             service_status_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.noise_button_1,null));
             service_status_text.setText(service_status_text1);
             service_status_info_text.setText(service_status_info_text1);
-            //todo 重新开启服务
+            //暂停服务
+            VolumeUpdater.getInstance().changeStatus(false);
         }
     }
 }
