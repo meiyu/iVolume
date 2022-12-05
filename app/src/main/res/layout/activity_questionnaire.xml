@@ -10,7 +10,7 @@
         android:id="@+id/button5"
         android:layout_width="220dp"
         android:layout_height="48dp"
-        android:layout_marginBottom="236dp"
+        android:layout_marginBottom="328dp"
         android:onClick="launchSecondActivity"
         android:text="@string/upload_answer"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -126,5 +126,29 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.167"
         app:srcCompat="?android:attr/actionModeFindDrawable" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="409dp"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button5"
+        app:layout_constraintVertical_bias="0.311"
+        tools:layout_editor_absoluteX="1dp" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="278dp"
+        android:layout_height="51dp"
+        android:layout_marginTop="19dp"
+        android:text="本问卷用于之后更好地为您提供性化服务，感谢您的配合！"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.593"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider2"
+        app:layout_constraintVertical_bias="0.005" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
