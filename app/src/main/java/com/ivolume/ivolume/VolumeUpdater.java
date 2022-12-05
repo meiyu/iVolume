@@ -72,6 +72,8 @@ public class VolumeUpdater extends Service {
     private final NoiseAdjuster mNoiseAdjuster;
     private final static double lambda = 0.5;
     private final static double mu = 0.2;
+    private boolean service_status = false; //是否开启服务
+    private boolean noise_calibrate_done = false; //是否进行了噪音矫正
 
     public static VolumeUpdater getInstance() {
         if (mVolumeUpdater == null) {
@@ -96,6 +98,8 @@ public class VolumeUpdater extends Service {
     }
 
     public void feedback(Context context, int gps, int app, boolean plugged, double noise, int qa_result) {
+        if(!service_status)
+            return;
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         // single entry
         Integer old_target = this.mMap.get(new ContextInfo(gps, app, plugged));
@@ -150,6 +154,8 @@ public class VolumeUpdater extends Service {
 
     // new_volume = target + f(noise, plugged)
     public void update(Context context, int gps, int app, boolean plugged, double noise) {
+        if(!service_status)
+            return;
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         Integer target = this.mMap.get(new ContextInfo(gps, app, plugged));
         int current_volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
@@ -170,5 +176,21 @@ public class VolumeUpdater extends Service {
             Log.d("VU", String.format("map context <gps=%d, app=%d, plugged=%b> (noise=%.2f) to volume <%d>",
                     gps, app, plugged, noise, target));
         }
+    }
+
+    public void changeStatus(boolean newStatus) {
+        this.service_status = newStatus;
+    }
+
+    public boolean getStatus() {
+        return this.service_status;
+    }
+
+    public void setNoiseCalibrateDone() {
+        this.noise_calibrate_done = true;
+    }
+
+    public boolean getNoiseCalibrateDone() {
+        return this.noise_calibrate_done;
     }
 }
