@@ -22,19 +22,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.Layout;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.ImageButton;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -326,7 +321,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d("onNoiseButtonClick",Integer.toString(noise_button_status));
         if(noise_button_status == 0){
             //开始进入检测状态
-            VolumeUpdater.getInstance().setNoiseCalibrateDone();
             noise_button_status = 1;
             noise_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.noise_button_2,null));
             noise_button.invalidate();
@@ -335,17 +329,13 @@ public class MainActivity extends AppCompatActivity {
             Log.d("onNoiseButtonClick","setImageDrawable");
             new Thread () {
                 public void run() {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    NoiseDetector noiseDetector = new NoiseDetector();
+                    double zero = noiseDetector.getNoise();
+                    VolumeUpdater.getInstance().setNoiseCalibrate(zero);
                     noise_button_status = 0;
                     noise_button.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.noise_button_1,null));
                 }
             }.start();
-//            NoiseDetector noiseDetector = new NoiseDetector();
-//            noiseDetector.getNoise();
 
             //结束噪音检测
 
@@ -371,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
             service_status_text.setText(service_status_text2);
             service_status_info_text.setText(service_status_info_text2);
             //启动服务
-            VolumeUpdater.getInstance().changeStatus(true);
+            VolumeUpdater.getInstance().setStatus(true);
 
         }
         else{
@@ -381,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
             service_status_text.setText(service_status_text1);
             service_status_info_text.setText(service_status_info_text1);
             //暂停服务
-            VolumeUpdater.getInstance().changeStatus(false);
+            VolumeUpdater.getInstance().setStatus(false);
         }
     }
 }

@@ -44,9 +44,9 @@ class ContextInfo {
 class NoiseAdjuster {
     // TODO decide init parameter through experiment
     private double noise_a_plugged = 0.2;
-    private final double noise_b_plugged = -40;
+    private double noise_b_plugged = -40;
     private double noise_a_unplugged = 0.2;
-    private final double noise_b_unplugged = -40;
+    private double noise_b_unplugged = -40;
     private final static double lambda = 0.5;
 
     // f(noise) = round(a * (noise + b))
@@ -61,6 +61,11 @@ class NoiseAdjuster {
         } else {
             noise_a_unplugged += noise_a_unplugged * lambda * delta_volume / (noise + noise_b_unplugged);
         }
+    }
+
+    public void calibrate(double zero) {
+        noise_b_plugged = -zero;
+        noise_b_unplugged = -zero;
     }
 }
 
@@ -178,7 +183,8 @@ public class VolumeUpdater extends Service {
         }
     }
 
-    public void changeStatus(boolean newStatus) {
+    public void setStatus(boolean newStatus) {
+        Log.d("VU", String.format("Set status to <%b>", newStatus));
         this.service_status = newStatus;
     }
 
@@ -186,11 +192,12 @@ public class VolumeUpdater extends Service {
         return this.service_status;
     }
 
-    public void setNoiseCalibrateDone() {
-        this.noise_calibrate_done = true;
-    }
-
     public boolean getNoiseCalibrateDone() {
         return this.noise_calibrate_done;
+    }
+
+    public void setNoiseCalibrate(double zero) {
+        this.noise_calibrate_done = true;
+        this.mNoiseAdjuster.calibrate(zero);
     }
 }

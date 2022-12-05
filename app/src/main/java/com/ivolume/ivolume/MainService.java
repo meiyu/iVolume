@@ -180,17 +180,15 @@ public class MainService extends AccessibilityService {
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.app_name);
-            String description = getString(R.string.app_name);
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel("问卷通知", name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+        CharSequence name = getString(R.string.app_name);
+        String description = getString(R.string.app_name);
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+        NotificationChannel channel = new NotificationChannel("问卷通知", name, importance);
+        channel.setDescription(description);
+        // Register the channel with the system; you can't change the importance
+        // or other notification behaviors after this
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
     }
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -489,10 +487,10 @@ public class MainService extends AccessibilityService {
         if(type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED){
             String tmpPackage = event.getPackageName()==null? "": event.getPackageName().toString();
             if(!tmpPackage.equals(CurrentPackage)){
+                CurrentPackage = tmpPackage;
                 //当前app包名改变时
                 //只针对AppPackageMap的5个app进行处理，忽略其他包
                 if(AppPackageMap.containsKey(tmpPackage)) {
-                    CurrentPackage = tmpPackage;
                     int cur_index = AppPackageMap.get(CurrentPackage);
                     Log.d("app_log_tag", "CurrentPackage changed, name:" + CurrentPackage
                     + ", index:" + cur_index);
