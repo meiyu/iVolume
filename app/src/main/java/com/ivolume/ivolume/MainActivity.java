@@ -384,4 +384,14 @@ public class MainActivity extends AppCompatActivity {
             VolumeUpdater.getInstance().changeStatus(false);
         }
     }
+
+    public void launchSettingsActivity(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    public void launchInfoActivity(View view) {
+        Intent intent = new Intent(this, InfoActivity.class);
+        startActivity(intent);
+    }
 }

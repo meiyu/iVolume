@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingsActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="10dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp">
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:paddingLeft="10dp"
+            android:text="iVolume会在以下情景中进行自动音量调节。"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:paddingLeft="10dp"
+            android:text="您可以切换按钮状态来启动或禁用某种情景。"
+            android:textAlignment="viewStart"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:paddingLeft="20dp">
+
+        </FrameLayout>
+
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="15dp"
+            android:paddingLeft="20dp">
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="前台app"
+            android:textAlignment="viewStart"
+            android:textSize="16sp" />
+
+        <Switch
+            android:id="@+id/appButton1"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginVertical="5dp"
+            android:background="#F0F0F0"
+            android:onClick="appButton1Click"
+            android:paddingHorizontal="10dp"
+            android:paddingLeft="20dp"
+            android:text="腾讯会议"
+            android:textSize="15sp" />
+
+        <Switch
+            android:id="@+id/appButton2"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginVertical="5dp"
+            android:background="#F0F0F0"
+            android:onClick="appButton2Click"
+            android:paddingHorizontal="10dp"
+            android:paddingLeft="20dp"
+            android:text="哔哩哔哩"
+            android:textSize="15sp" />
+
+        <Switch
+            android:id="@+id/appButton3"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginVertical="5dp"
+            android:background="#F0F0F0"
+            android:onClick="appButton3Click"
+            android:paddingHorizontal="10dp"
+            android:paddingLeft="20dp"
+            android:text="网易云    "
+            android:textSize="15sp" />
+
+        <Switch
+            android:id="@+id/appButton4"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginVertical="5dp"
+            android:background="#F0F0F0"
+            android:onClick="appButton4Click"
+            android:paddingHorizontal="10dp"
+            android:paddingLeft="20dp"
+            android:text="乐动力    "
+            android:textSize="15sp" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="19dp"
+            android:paddingLeft="20dp">
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="地点"
+            android:textSize="16sp" />
+
+        <Switch
+            android:id="@+id/locationButton1"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginVertical="5dp"
+            android:background="#F0F0F0"
+            android:onClick="locationButton1Click"
+            android:paddingHorizontal="10dp"
+            android:paddingLeft="20dp"
+            android:text="紫荆操场"
+            android:textSize="15sp" />
+
+        <Switch
+            android:id="@+id/locationButton2"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginVertical="5dp"
+            android:background="#F0F0F0"
+            android:onClick="locationButton2Click"
+            android:paddingHorizontal="10dp"
+            android:paddingLeft="20dp"
+            android:text="紫荆食堂"
+            android:textSize="15sp" />
+
+        <Switch
+            android:id="@+id/locationButton3"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginVertical="5dp"
+            android:background="#F0F0F0"
+            android:onClick="locationButton3Click"
+            android:paddingHorizontal="10dp"
+            android:paddingLeft="20dp"
+            android:text="六教        "
+            android:textSize="15sp" />
+
+        <Switch
+            android:id="@+id/locationButton4"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginVertical="5dp"
+            android:background="#F0F0F0"
+            android:onClick="locationButton4Click"
+            android:paddingHorizontal="10dp"
+            android:paddingLeft="20dp"
+            android:text="李文正馆"
+            android:textSize="15sp" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="19dp"
+            android:paddingLeft="20dp">
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="接入设备"
+            android:textSize="16sp" />
+
+        <Switch
+            android:id="@+id/deviceButton1"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginVertical="5dp"
+            android:background="#F0F0F0"
+            android:onClick="deviceButton1Click"
+            android:paddingHorizontal="10dp"
+            android:paddingLeft="20dp"
+            android:text="蓝牙耳机"
+            android:textSize="15sp" />
+
+        <Switch
+            android:id="@+id/deviceButton2"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginVertical="5dp"
+            android:background="#F0F0F0"
+            android:onClick="deviceButton2Click"
+            android:paddingHorizontal="10dp"
+            android:paddingLeft="20dp"
+            android:text="无接入    "
+            android:textSize="15sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="219dp"
+                android:layout_height="match_parent">
+
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/imageView4"
+                android:layout_width="172dp"
+                android:layout_height="101dp"
+                app:srcCompat="@drawable/ivolume_logo" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

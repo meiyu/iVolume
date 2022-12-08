@@ -134,15 +134,19 @@ public class MainService extends AccessibilityService {
     public static String CurrentPackage; //当前app
     public static Map<String, Integer> AppPackageMap = new HashMap<String, Integer>() {{
         put("com.tencent.wemeet.app", 0); //腾讯会议
-//        put("com.tencent.mm", 1);  //微信
-        put("tv.danmaku.bili", 2);  //b站
-        put("com.netease.cloudmusic", 3);  //网易云
-        put("cn.ledongli.ldl", 4);  //乐动力
+        put("tv.danmaku.bili", 1);  //b站
+        put("com.netease.cloudmusic", 2);  //网易云
+        put("cn.ledongli.ldl", 3);  //乐动力
     }};
 
     //这1s内是否进行了音量调节
     public static boolean volume_key_pressed = false;
     public static boolean volume_change_pending = false;
+    //是否禁用某个情景
+    public static boolean[] appEnable={true,true,true,true};
+    public static boolean[] locationEnable={true,true,true,true};
+    public static boolean[] deviceEnable={true,true};
+
 
 
     // TODO judge whether context changed, if so:
@@ -244,8 +248,8 @@ public class MainService extends AccessibilityService {
                     plugged = false;
                     break;
             }
-
-            doUpdate();
+            if((plugged && deviceEnable[0]) || (!plugged && deviceEnable[1]))
+                doUpdate();
             jsonSilentPut(json, "package", packageName);
 
             // record data
@@ -372,10 +376,19 @@ public class MainService extends AccessibilityService {
                     }
                     if(volume_change_pending){
                         //完成一次音量调节事件，弹出通知
-                        NoiseDetector noiseDetector = new NoiseDetector();
-                        noise = noiseDetector.getNoise();
-                        volume_change_pending = false;
-                        createNotification("检测到您的音量调节", "为了更好地为您服务，邀请您填写反馈问卷！");
+                        int app_index = getApp();
+                        //前提：当前app & gps & device的情景没有被禁用
+                        //todo gps
+                        if(0<=app_index && app_index<=3 && appEnable[app_index]
+                        &&((plugged && deviceEnable[0]) || (!plugged && deviceEnable[1]))){
+                            NoiseDetector noiseDetector = new NoiseDetector();
+                            noise = noiseDetector.getNoise();
+                            volume_change_pending = false;
+                            createNotification("检测到您的音量调节", "为了更好地为您服务，邀请您填写反馈问卷！");
+                        }
+                        //禁用时，清空本次volume_change状态
+                        else
+                            volume_change_pending = false;
                     }
                 }
             }
@@ -496,7 +509,8 @@ public class MainService extends AccessibilityService {
                     int cur_index = AppPackageMap.get(CurrentPackage);
                     Log.d("app_log_tag", "CurrentPackage changed, name:" + CurrentPackage
                     + ", index:" + cur_index);
-                    doUpdate();
+                    if(appEnable[cur_index])
+                        doUpdate();
                 }
             }
         }
