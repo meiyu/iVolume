@@ -12,49 +12,35 @@
         android:orientation="vertical"
         android:paddingHorizontal="10dp">
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="10dp">
+            android:layout_height="123dp"
+            android:orientation="horizontal">
 
-        </FrameLayout>
+            <TextView
+                android:id="@+id/textView10"
+                android:layout_width="246dp"
+                android:layout_height="match_parent"
+                android:fontFamily="sans-serif-medium"
+                android:paddingVertical="25dp"
+                android:paddingLeft="10dp"
+                android:text="iVolume会在以下情景中进行自动音量调节。您可以切换按钮状态来启动或禁用某种情景。"
+                android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/textView10"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-medium"
-            android:paddingLeft="10dp"
-            android:text="iVolume会在以下情景中进行自动音量调节。"
-            android:textColor="@color/black"
-            android:textSize="17sp" />
+            <ImageView
+                android:id="@+id/imageView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="10dp"
+                app:srcCompat="@drawable/settings" />
 
-        <TextView
-            android:id="@+id/textView11"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-medium"
-            android:paddingLeft="10dp"
-            android:text="您可以切换按钮状态来启动或禁用某种情景。"
-            android:textAlignment="viewStart"
-            android:textColor="@color/black"
-            android:textSize="17sp" />
+        </LinearLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="10dp"
-            android:paddingLeft="20dp">
-
-        </FrameLayout>
-
-        <View
-            android:id="@+id/divider3"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="15dp"
             android:paddingLeft="20dp">
 
         </FrameLayout>
@@ -71,8 +57,8 @@
         <Switch
             android:id="@+id/appButton1"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginVertical="5dp"
+            android:layout_height="32dp"
+            android:layout_marginVertical="3dp"
             android:background="#F0F0F0"
             android:onClick="appButton1Click"
             android:paddingHorizontal="10dp"
@@ -83,8 +69,8 @@
         <Switch
             android:id="@+id/appButton2"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginVertical="5dp"
+            android:layout_height="32dp"
+            android:layout_marginVertical="3dp"
             android:background="#F0F0F0"
             android:onClick="appButton2Click"
             android:paddingHorizontal="10dp"
@@ -95,8 +81,8 @@
         <Switch
             android:id="@+id/appButton3"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginVertical="5dp"
+            android:layout_height="32dp"
+            android:layout_marginVertical="3dp"
             android:background="#F0F0F0"
             android:onClick="appButton3Click"
             android:paddingHorizontal="10dp"
@@ -107,8 +93,8 @@
         <Switch
             android:id="@+id/appButton4"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginVertical="5dp"
+            android:layout_height="32dp"
+            android:layout_marginVertical="3dp"
             android:background="#F0F0F0"
             android:onClick="appButton4Click"
             android:paddingHorizontal="10dp"
@@ -118,7 +104,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="19dp"
+            android:layout_height="10dp"
             android:paddingLeft="20dp">
 
         </FrameLayout>
@@ -134,8 +120,8 @@
         <Switch
             android:id="@+id/locationButton1"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginVertical="5dp"
+            android:layout_height="32dp"
+            android:layout_marginVertical="3dp"
             android:background="#F0F0F0"
             android:onClick="locationButton1Click"
             android:paddingHorizontal="10dp"
@@ -146,8 +132,8 @@
         <Switch
             android:id="@+id/locationButton2"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginVertical="5dp"
+            android:layout_height="32dp"
+            android:layout_marginVertical="3dp"
             android:background="#F0F0F0"
             android:onClick="locationButton2Click"
             android:paddingHorizontal="10dp"
@@ -158,8 +144,8 @@
         <Switch
             android:id="@+id/locationButton3"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginVertical="5dp"
+            android:layout_height="32dp"
+            android:layout_marginVertical="3dp"
             android:background="#F0F0F0"
             android:onClick="locationButton3Click"
             android:paddingHorizontal="10dp"
@@ -170,8 +156,8 @@
         <Switch
             android:id="@+id/locationButton4"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginVertical="5dp"
+            android:layout_height="32dp"
+            android:layout_marginVertical="3dp"
             android:background="#F0F0F0"
             android:onClick="locationButton4Click"
             android:paddingHorizontal="10dp"
@@ -181,7 +167,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="19dp"
+            android:layout_height="10dp"
             android:paddingLeft="20dp">
 
         </FrameLayout>
@@ -197,8 +183,8 @@
         <Switch
             android:id="@+id/deviceButton1"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginVertical="5dp"
+            android:layout_height="32dp"
+            android:layout_marginVertical="3dp"
             android:background="#F0F0F0"
             android:onClick="deviceButton1Click"
             android:paddingHorizontal="10dp"
@@ -209,8 +195,8 @@
         <Switch
             android:id="@+id/deviceButton2"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginVertical="5dp"
+            android:layout_height="32dp"
+            android:layout_marginVertical="3dp"
             android:background="#F0F0F0"
             android:onClick="deviceButton2Click"
             android:paddingHorizontal="10dp"
@@ -220,7 +206,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="180dp"
+            android:layout_height="103dp"
             android:orientation="horizontal">
 
             <FrameLayout
