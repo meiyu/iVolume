@@ -1,5 +1,6 @@
 package com.ivolume.ivolume;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -24,8 +25,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.lang.Math;
+import java.util.Locale;
 
 // when context changes, call this updater to update phone volume
 // this updater should maintain a table from context (tuple) to volume (int, etc.)
@@ -116,6 +121,23 @@ public class VolumeUpdater extends Service implements Serializable {
     transient private boolean service_status = false; //是否开启服务
     private boolean noise_calibrate_done = false; //是否进行了噪音矫正
 
+    private static String getTime() {
+        return (new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss", Locale.US)).format(new Date());
+    }
+
+    private void writeLog(Context context, String log) {
+        try {
+            FileOutputStream fos = context.openFileOutput("VolumeUpdater.log", Context.MODE_APPEND);
+//            ObjectOutputStream os = new ObjectOutputStream(fos);
+//            os.writeBytes(getTime() + log + "\n");
+            fos.write((getTime() + log + "\n").getBytes(StandardCharsets.UTF_8));
+//            os.close();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void writeConfig(Context context) {
         Log.d("VU", context.getFilesDir().toString());
         try {
@@ -190,13 +212,17 @@ public class VolumeUpdater extends Service implements Serializable {
     }
 
     public void feedback(Context context, int gps, int app, boolean plugged, double noise, int qa_result) {
-        if (!service_status)
-            return;
-        this.readConfig(context);
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        int current_volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        if (!service_status) {
+            this.writeLog(context, String.format(Locale.getDefault(),
+                    "[feedback]service=0,gps=%d,app=%d,plugged=%b,noise=0,qa_result=0,vol=%d,hit=0,target=0,delta=0",
+                    gps, app, plugged, current_volume));
+            return;
+        }
+        this.readConfig(context);
         // single entry
         Integer old_target = this.mMap.get(new ContextInfo(gps, app, plugged));
-        int current_volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         int current_target = current_volume - this.mNoiseAdjuster.adjust(noise, plugged);
         if (old_target != null) {
             int new_target = (int) Math.round(current_target * lambda + old_target * (1 - lambda));
@@ -204,8 +230,14 @@ public class VolumeUpdater extends Service implements Serializable {
             this.writeConfig(context);
             Log.d("VU", String.format("change context <gps=%d, app=%d, plugged=%b, noise=%.2f> from <%d> to <%d>",
                     gps, app, plugged, noise, old_target, new_target));
+            this.writeLog(context, String.format(Locale.getDefault(),
+                    "[feedback]service=1,gps=%d,app=%d,plugged=%b,noise=%.2f,qa_result=%d,vol=%d,hit=1,target=%d,new_target=%d",
+                    gps, app, plugged, noise, qa_result, current_volume, old_target, new_target));
         } else {  // regard as not-hit context and we don't want to insert it
             Log.d("VU", "feedback target miss");
+            this.writeLog(context, String.format(Locale.getDefault(),
+                    "[feedback]service=1,gps=%d,app=%d,plugged=%b,noise=%.2f,qa_result=%d,vol=%d,hit=0,target=0,delta=0",
+                    gps, app, plugged, noise, qa_result, current_volume));
             return;
         }
 
@@ -249,17 +281,24 @@ public class VolumeUpdater extends Service implements Serializable {
 
     // new_volume = target + f(noise, plugged)
     public void update(Context context, int gps, int app, boolean plugged, double noise) {
-        if (!service_status)
-            return;
         this.readConfig(context);
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        Integer target = this.mMap.get(new ContextInfo(gps, app, plugged));
         int current_volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        if (!service_status) {
+            this.writeLog(context, String.format(Locale.getDefault(),
+                    "[update]service=0,gps=%d,app=%d,plugged=%b,noise=%.2f,old_vol=%d,hit=0,delta=0;",
+                    gps, app, plugged, noise, current_volume));
+            return;
+        }
+        Integer target = this.mMap.get(new ContextInfo(gps, app, plugged));
         if (target == null) {  // does not contain current context
             this.mMap.put(new ContextInfo(gps, app, plugged), current_volume - this.mNoiseAdjuster.adjust(noise, plugged));
             this.writeConfig(context);
             Log.d("VU", String.format("add new context <gps=%d, app=%d, plugged=%b> (noise=%.2f), now contains %d entries",
                     gps, app, plugged, noise, this.mMap.size()));
+            this.writeLog(context, String.format(Locale.getDefault(),
+                    "[update]service=1,gps=%d,app=%d,plugged=%b,noise=%.2f,old_vol=%d,hit=0,delta=0;",
+                    gps, app, plugged, noise, current_volume));
 
         } else {
             target = target + this.mNoiseAdjuster.adjust(noise, plugged);
@@ -272,6 +311,9 @@ public class VolumeUpdater extends Service implements Serializable {
             }
             Log.d("VU", String.format("map context <gps=%d, app=%d, plugged=%b> (noise=%.2f) to volume <%d>",
                     gps, app, plugged, noise, target));
+            this.writeLog(context, String.format(Locale.getDefault(),
+                    "[update]service=1,gps=%d,app=%d,plugged=%b,noise=%.2f,old_vol=%d,hit=1,delta=%d;",
+                    gps, app, plugged, noise, current_volume, target - current_volume));
         }
     }
 
