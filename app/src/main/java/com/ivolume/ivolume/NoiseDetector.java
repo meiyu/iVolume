@@ -62,8 +62,6 @@ public class NoiseDetector {
             double mean = v / (double) r;
             volume = (10 * Math.log10(mean) + volume * noise_count) / (noise_count + 1);
             volume_level = getNoiseLevel(volume);
-            Log.d(TAG, "db:" + volume);
-            Log.d(TAG, "db level:" + volume_level);
             // 大概一秒十次
             synchronized (mLock) {
                 try {

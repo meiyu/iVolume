@@ -346,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
     public void onServiceStatusButtonClick(View view) {
         if(service_status == 0){
             //如果没矫正，提醒进行噪音矫正
-            if(!VolumeUpdater.getInstance().getNoiseCalibrateDone()) {
+            if(!VolumeUpdater.getInstance().getNoiseCalibrateDone(this)) {
                 AlertDialog alertDialog1 = new AlertDialog.Builder(this)
                         .setTitle("请先进行噪音矫正")//标题
                         .setMessage("请移步至安静环境，点击下方的按钮，进行噪音矫正")//内容

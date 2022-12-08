@@ -7,6 +7,23 @@ import android.media.AudioManager;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.io.Writer;
 import java.util.HashMap;
 import java.lang.Math;
 
@@ -16,7 +33,7 @@ import java.lang.Math;
 // maybe consider implementing as singleton for easy use?
 
 
-class ContextInfo {
+class ContextInfo implements Serializable {
     public int gps;
     public int app;
     public boolean plugged;
@@ -38,10 +55,20 @@ class ContextInfo {
     public int hashCode() {
         return 193 * gps + 24593 * app + (plugged ? 53 : 0);
     }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "ContextInfo{" +
+                "gps=" + gps +
+                ", app=" + app +
+                ", plugged=" + plugged +
+                '}';
+    }
 }
 
 
-class NoiseAdjuster {
+class NoiseAdjuster implements Serializable {
     // TODO decide init parameter through experiment
     private double noise_a_plugged = 0.2;
     private double noise_b_plugged = -40;
@@ -67,18 +94,78 @@ class NoiseAdjuster {
         noise_b_plugged = -zero;
         noise_b_unplugged = -zero;
     }
+
+    @Override
+    public String toString() {
+        return "NoiseAdjuster{" +
+                "noise_a_plugged=" + noise_a_plugged +
+                ", noise_b_plugged=" + noise_b_plugged +
+                ", noise_a_unplugged=" + noise_a_unplugged +
+                ", noise_b_unplugged=" + noise_b_unplugged +
+                '}';
+    }
 }
 
 
-public class VolumeUpdater extends Service {
-    public static VolumeUpdater mVolumeUpdater;
-//    private AudioManager mAudioManager;
-    private final HashMap<ContextInfo, Integer> mMap;
-    private final NoiseAdjuster mNoiseAdjuster;
-    private final static double lambda = 0.5;
-    private final static double mu = 0.2;
-    private boolean service_status = false; //是否开启服务
+public class VolumeUpdater extends Service implements Serializable {
+    transient public static VolumeUpdater mVolumeUpdater;
+    private HashMap<ContextInfo, Integer> mMap;
+    private NoiseAdjuster mNoiseAdjuster;
+    private double lambda = 0.5;
+    private double mu = 0.2;
+    transient private boolean service_status = false; //是否开启服务
     private boolean noise_calibrate_done = false; //是否进行了噪音矫正
+
+    private void writeConfig(Context context) {
+        Log.d("VU", context.getFilesDir().toString());
+        try {
+//            config.createNewFile();
+            FileOutputStream fos = context.openFileOutput("VolumeUpdater.dat", Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(this);
+            os.close();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        Gson gson = new Gson();
+//        String j = gson.toJson(this);
+//        JSONObject json = new JSONObject();
+//        try {
+//            json.put("service_status", this.service_status);
+//            json.put("noise_calibrate_done", this.noise_calibrate_done);
+//            json.put("mMap", new JSONObject(this.mMap));
+//            json.put("mNoiseAdjuster", this.mNoiseAdjuster);
+////            FileOutputStream fout = openFileOutput(config, Context.MODE_PRIVATE);
+////            fout.write(json.toString().getBytes());
+////            fout.flush();
+////            fout.close();
+//            BufferedWriter writer = new BufferedWriter(new FileWriter(config));
+//            writer.write(json.toString());
+//            writer.flush();
+//            writer.close();
+//            Log.d("VU", "config file written");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    private void readConfig(Context context) {
+        try {
+            FileInputStream fis = context.openFileInput("VolumeUpdater.dat");
+            ObjectInputStream is = new ObjectInputStream(fis);
+            VolumeUpdater saved = (VolumeUpdater) is.readObject();
+            this.mMap = saved.mMap;
+            this.mNoiseAdjuster = saved.mNoiseAdjuster;
+            this.lambda = saved.lambda;
+            this.mu = saved.mu;
+            this.noise_calibrate_done = saved.noise_calibrate_done;
+            is.close();
+            fis.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public static VolumeUpdater getInstance() {
         if (mVolumeUpdater == null) {
@@ -103,8 +190,9 @@ public class VolumeUpdater extends Service {
     }
 
     public void feedback(Context context, int gps, int app, boolean plugged, double noise, int qa_result) {
-        if(!service_status)
+        if (!service_status)
             return;
+        this.readConfig(context);
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         // single entry
         Integer old_target = this.mMap.get(new ContextInfo(gps, app, plugged));
@@ -113,9 +201,11 @@ public class VolumeUpdater extends Service {
         if (old_target != null) {
             int new_target = (int) Math.round(current_target * lambda + old_target * (1 - lambda));
             this.mMap.replace(new ContextInfo(gps, app, plugged), new_target);
-            Log.d("VUT", String.format("change context <gps=%d, app=%d, plugged=%b, noise=%.2f> from <%d> to <%d>",
+            this.writeConfig(context);
+            Log.d("VU", String.format("change context <gps=%d, app=%d, plugged=%b, noise=%.2f> from <%d> to <%d>",
                     gps, app, plugged, noise, old_target, new_target));
         } else {  // regard as not-hit context and we don't want to insert it
+            Log.d("VU", "feedback target miss");
             return;
         }
 
@@ -159,13 +249,15 @@ public class VolumeUpdater extends Service {
 
     // new_volume = target + f(noise, plugged)
     public void update(Context context, int gps, int app, boolean plugged, double noise) {
-        if(!service_status)
+        if (!service_status)
             return;
+        this.readConfig(context);
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         Integer target = this.mMap.get(new ContextInfo(gps, app, plugged));
         int current_volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         if (target == null) {  // does not contain current context
             this.mMap.put(new ContextInfo(gps, app, plugged), current_volume - this.mNoiseAdjuster.adjust(noise, plugged));
+            this.writeConfig(context);
             Log.d("VU", String.format("add new context <gps=%d, app=%d, plugged=%b> (noise=%.2f), now contains %d entries",
                     gps, app, plugged, noise, this.mMap.size()));
 
@@ -192,12 +284,24 @@ public class VolumeUpdater extends Service {
         return this.service_status;
     }
 
-    public boolean getNoiseCalibrateDone() {
+    public boolean getNoiseCalibrateDone(Context context) {
+        this.readConfig(context);
         return this.noise_calibrate_done;
     }
 
     public void setNoiseCalibrate(double zero) {
         this.noise_calibrate_done = true;
         this.mNoiseAdjuster.calibrate(zero);
+    }
+
+    @Override
+    public String toString() {
+        return "VolumeUpdater{" +
+                "mMap=" + mMap +
+                ", mNoiseAdjuster=" + mNoiseAdjuster +
+                ", lambda=" + lambda +
+                ", mu=" + mu +
+                ", noise_calibrate_done=" + noise_calibrate_done +
+                '}';
     }
 }

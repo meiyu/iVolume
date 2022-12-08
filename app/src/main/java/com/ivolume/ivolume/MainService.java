@@ -370,10 +370,12 @@ public class MainService extends AccessibilityService {
                     }
                     if(volume_change_pending){
                         //完成一次音量调节事件，弹出通知
-                        NoiseDetector noiseDetector = new NoiseDetector();
-                        noise = noiseDetector.getNoise();
                         volume_change_pending = false;
-                        createNotification("检测到您的音量调节", "为了更好地为您服务，邀请您填写反馈问卷！");
+                        if (getApp() != 5) {
+                            NoiseDetector noiseDetector = new NoiseDetector();
+                            noise = noiseDetector.getNoise();
+                            createNotification("检测到您的音量调节", "为了更好地为您服务，邀请您填写反馈问卷！");
+                        }
                     }
                 }
             }
@@ -486,14 +488,15 @@ public class MainService extends AccessibilityService {
         //监测app变化
         if(type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED){
             String tmpPackage = event.getPackageName()==null? "": event.getPackageName().toString();
-            if(!tmpPackage.equals(CurrentPackage)){
+            if(!tmpPackage.equals(CurrentPackage) && !tmpPackage.equals("com.ivolume.ivolume") && !tmpPackage.equals("com.android.systemui")){
+                Log.d("package",tmpPackage);
                 CurrentPackage = tmpPackage;
                 //当前app包名改变时
                 //只针对AppPackageMap的5个app进行处理，忽略其他包
                 if(AppPackageMap.containsKey(tmpPackage)) {
-                    int cur_index = AppPackageMap.get(CurrentPackage);
-                    Log.d("app_log_tag", "CurrentPackage changed, name:" + CurrentPackage
-                    + ", index:" + cur_index);
+//                    int cur_index = AppPackageMap.get(CurrentPackage);
+//                    Log.d("app_log_tag", "CurrentPackage changed, name:" + CurrentPackage
+//                    + ", index:" + cur_index);
                     doUpdate();
                 }
             }
