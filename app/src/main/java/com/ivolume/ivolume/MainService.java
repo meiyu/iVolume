@@ -99,7 +99,7 @@ public class MainService extends AccessibilityService {
     FileWriter writer;
     int brightness;
     public static int gps;
-    public static boolean plugged;
+    public static boolean plugged=false;
     public static double noise;
     private int curr_volume;
     static final HashMap<String, Integer> volume = new HashMap<>();
