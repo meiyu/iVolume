@@ -357,8 +357,14 @@ public class MainService extends AccessibilityService {
     private int gps2place(double Latitude, double Longitude) {
         // TODO
         // 操场
+        if(Longitude>=116.3353&&Longitude<=116.3369&&Latitude>=40.0146&&Latitude<=40.0165)
+            return 1;
         // 六教
+        if(Longitude>=116.3357&&Longitude<=116.3372&&Latitude>=40.0079&&Latitude<=40.0091)
+            return 2;
         // 李文正馆
+        if(Longitude>=116.3296&&Longitude<=116.3323&&Latitude>=40.0098&&Latitude<=40.0117)
+            return 3;
         // 其他
         return 0;
     }
