@@ -45,10 +45,12 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.ACCESS_WIFI_STATE,
             Manifest.permission.CHANGE_WIFI_STATE,
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.SYSTEM_ALERT_WINDOW,
             Manifest.permission.BLUETOOTH,
             Manifest.permission.BLUETOOTH_ADMIN,
             Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_SCAN
     };
 
     Context context;
