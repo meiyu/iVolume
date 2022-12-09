@@ -1,5 +1,6 @@
 package com.ivolume.ivolume;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -23,6 +24,7 @@ public class SettingsActivity extends AppCompatActivity {
     Switch deviceButton1;
     Switch deviceButton2;
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,79 +40,67 @@ public class SettingsActivity extends AppCompatActivity {
         deviceButton1 = findViewById(R.id.deviceButton1);
         deviceButton2 = findViewById(R.id.deviceButton2);
         //加载上次的设置
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            appButton1.setChecked(MainService.appEnable[0]);
-            appButton2.setChecked(MainService.appEnable[1]);
-            appButton3.setChecked(MainService.appEnable[2]);
-            appButton4.setChecked(MainService.appEnable[3]);
+        appButton1.setChecked(MainService.appEnable[0]);
+        appButton2.setChecked(MainService.appEnable[1]);
+        appButton3.setChecked(MainService.appEnable[2]);
+        appButton4.setChecked(MainService.appEnable[3]);
 
-            locationButton1.setChecked(MainService.locationEnable[0]);
-            locationButton2.setChecked(MainService.locationEnable[1]);
-            locationButton3.setChecked(MainService.locationEnable[2]);
-            locationButton4.setChecked(MainService.locationEnable[3]);
+        locationButton1.setChecked(MainService.locationEnable[0]);
+        locationButton2.setChecked(MainService.locationEnable[1]);
+        locationButton3.setChecked(MainService.locationEnable[2]);
+        locationButton4.setChecked(MainService.locationEnable[3]);
 
-            deviceButton1.setChecked(MainService.deviceEnable[0]);
-            deviceButton2.setChecked(MainService.deviceEnable[1]);
-        }
+        deviceButton1.setChecked(MainService.deviceEnable[0]);
+        deviceButton2.setChecked(MainService.deviceEnable[1]);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public void appButton1Click(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            MainService.appEnable[0] = !(MainService.appEnable[0]);
-        }
+       MainService.appEnable[0] = !(MainService.appEnable[0]);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public void appButton2Click(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            MainService.appEnable[1] = !(MainService.appEnable[1]);
-        }
+        MainService.appEnable[1] = !(MainService.appEnable[1]);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public void appButton3Click(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            MainService.appEnable[2] = !(MainService.appEnable[2]);
-        }
+        MainService.appEnable[2] = !(MainService.appEnable[2]);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public void appButton4Click(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            MainService.appEnable[3] = !(MainService.appEnable[3]);
-        }
+        MainService.appEnable[3] = !(MainService.appEnable[3]);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public void locationButton1Click(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            MainService.locationEnable[0] = !(MainService.locationEnable[0]);
-        }
+        MainService.locationEnable[0] = !(MainService.locationEnable[0]);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public void locationButton2Click(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            MainService.locationEnable[1] = !(MainService.locationEnable[1]);
-        }
+        MainService.locationEnable[1] = !(MainService.locationEnable[1]);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public void locationButton3Click(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            MainService.locationEnable[2] = !(MainService.locationEnable[2]);
-        }
+        MainService.locationEnable[2] = !(MainService.locationEnable[2]);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public void locationButton4Click(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            MainService.locationEnable[3] = !(MainService.locationEnable[3]);
-        }
+        MainService.locationEnable[3] = !(MainService.locationEnable[3]);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public void deviceButton1Click(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            MainService.deviceEnable[0] = !(MainService.deviceEnable[0]);
-        }
+        MainService.deviceEnable[0] = !(MainService.deviceEnable[0]);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public void deviceButton2Click(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            MainService.deviceEnable[1] = !(MainService.deviceEnable[1]);
-        }
+        MainService.deviceEnable[1] = !(MainService.deviceEnable[1]);
     }
 }
