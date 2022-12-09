@@ -6,44 +6,29 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="0dp">
-
+        android:layout_height="match_parent">
         <LinearLayout
+            android:id="@+id/l1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
+            android:gravity="center_horizontal"
+            android:background="@color/black"
             android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+            <ImageButton
+                android:id="@+id/imageButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:background="@color/black"
+                android:onClick="launchInfoActivity"
+                app:srcCompat="@android:drawable/ic_menu_info_details" />
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="22dp"
-                    android:background="@color/black">
-
-                </FrameLayout>
-
-                <ImageButton
-                    android:id="@+id/imageButton2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/black"
-                    android:onClick="launchInfoActivity"
-                    app:srcCompat="@android:drawable/ic_menu_info_details" />
-            </LinearLayout>
 
             <LinearLayout
-                android:layout_width="290dp"
+                android:layout_width="250dp"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
@@ -75,41 +60,22 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="22dp"
-                    android:background="@color/black">
-
-                </FrameLayout>
-
-                <ImageButton
-                    android:id="@+id/SettingsButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/black"
-                    android:onClick="launchSettingsActivity"
-                    app:srcCompat="@android:drawable/ic_menu_preferences" />
-
-            </LinearLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/black">
-
-            </FrameLayout>
+            <ImageButton
+                android:id="@+id/SettingsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:background="@color/black"
+                android:onClick="launchSettingsActivity"
+                app:srcCompat="@android:drawable/ic_menu_preferences" />
 
         </LinearLayout>
 
         <ImageButton
             android:id="@+id/service_status_button"
-            android:layout_width="wrap_content"
-            android:layout_height="416dp"
+            android:layout_width="match_parent"
+            android:layout_height="320dp"
+            android:layout_below="@id/l1"
             android:backgroundTint="#00FFFFFF"
             android:onClick="onServiceStatusButtonClick"
             android:paddingHorizontal="50dp"
@@ -121,16 +87,16 @@
             android:id="@+id/service_status_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/service_status_button"
             android:text="当前状态：正在服务"
             android:textAlignment="center" />
 
         <TextView
             android:id="@+id/service_status_info_text"
             android:layout_width="match_parent"
-            android:layout_height="66dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
-
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/service_status_text"
             android:scrollbars="vertical"
             android:text="点击上部按钮暂停服务~"
             android:textAlignment="center" />
@@ -138,24 +104,26 @@
         <View
             android:id="@+id/divider"
             android:layout_width="match_parent"
+            android:layout_marginBottom="20dp"
             android:layout_height="1dp"
+            android:layout_alignTop="@id/bottom1"
             android:background="?android:attr/listDivider" />
 
-        <View
-            android:id="@+id/view"
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
-
         <LinearLayout
+            android:id="@+id/bottom1"
             android:layout_width="match_parent"
-            android:layout_height="114dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="15dp"
             android:background="#00DCDCDC"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingTop="15dp">
 
             <LinearLayout
-                android:layout_width="320dp"
+                android:layout_width="260dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
                 android:orientation="vertical"
                 android:paddingHorizontal="20dp">
 
@@ -171,7 +139,7 @@
 
                 <TextView
                     android:id="@+id/textView3"
-                    android:layout_width="267dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="为了更好地为您服务，请点击右侧按钮进行噪音校准！请在第一次使用iVolume前，在安静的环境下完成本步骤。"
                     android:textAlignment="viewStart"
@@ -182,8 +150,8 @@
 
             <ImageButton
                 android:id="@+id/noise_button"
-                android:layout_width="56dp"
-                android:layout_height="48dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:background="#00000000"
                 android:foregroundTint="#00E53935"
                 android:onClick="onNoiseButtonClick"
@@ -192,6 +160,6 @@
                 tools:visibility="visible" />
         </LinearLayout>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
