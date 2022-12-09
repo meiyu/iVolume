@@ -127,12 +127,17 @@ public class VolumeUpdater extends Service implements Serializable {
 
     private void writeLog(Context context, String log) {
         try {
-            FileOutputStream fos = context.openFileOutput("VolumeUpdater.log", Context.MODE_APPEND);
+            File file = new File(context.getExternalFilesDir(null), "VolumeUpdater.log");
+            FileWriter writer = new FileWriter(file, true);
+            writer.write(getTime() + log + "\n");
+            writer.flush();
+            writer.close();
+//            FileOutputStream fos = context.openFileOutput("VolumeUpdater.log", Context.MODE_APPEND);
 //            ObjectOutputStream os = new ObjectOutputStream(fos);
 //            os.writeBytes(getTime() + log + "\n");
-            fos.write((getTime() + log + "\n").getBytes(StandardCharsets.UTF_8));
+//            fos.write((getTime() + log + "\n").getBytes(StandardCharsets.UTF_8));
 //            os.close();
-            fos.close();
+//            fos.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -332,6 +337,7 @@ public class VolumeUpdater extends Service implements Serializable {
     }
 
     public void setNoiseCalibrate(double zero) {
+        Log.d("VU", String.format("cal noise to %.2f", zero));
         this.noise_calibrate_done = true;
         this.mNoiseAdjuster.calibrate(zero);
     }
