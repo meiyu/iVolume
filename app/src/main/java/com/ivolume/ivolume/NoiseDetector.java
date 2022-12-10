@@ -55,14 +55,19 @@ public class NoiseDetector {
         Log.d("Audio", String.format("%b %d", isGetVoiceRun, noise_count));
         while (noise_count <= 10) {
             int r = mAudioRecord.read(buffer, 0, BUFFER_SIZE);
-            long v = 0;
+            long v = 1;
             for (int i = 0; i < buffer.length; i++) {
                 v += buffer[i] * buffer[i];
                 Log.d("buffer",String.valueOf(buffer[i]));
             }
             double mean = v / (double) r;
+            Log.d("volume_1",String.valueOf(volume));
+            Log.d("volume_count",String.valueOf(noise_count));
             volume = (10 * Math.log10(mean) + volume * noise_count) / (noise_count + 1);
             volume_level = getNoiseLevel(volume);
+            Log.d("volume_mean",String.valueOf(mean));
+            Log.d("volume_2",String.valueOf(volume));
+            Log.d("volume_level",String.valueOf(volume_level));
             // 大概一秒十次
             synchronized (mLock) {
                 try {
