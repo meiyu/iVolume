@@ -18,7 +18,6 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:orientation="horizontal"
-            android:paddingHorizontal="20dp"
             android:paddingTop="50dp"
             android:paddingBottom="30dp">
 
@@ -62,10 +61,10 @@
 
         <RadioGroup
             android:id="@+id/radioGroup"
-            android:layout_width="327dp"
+            android:layout_width="match_parent"
             android:layout_height="187dp"
             android:layout_below="@id/top1"
-            android:layout_centerHorizontal="true">
+            android:layout_marginBottom="20dp">
 
             <RadioButton
                 android:id="@+id/selectButton1"
@@ -117,7 +116,6 @@
                 android:textColorLink="#6200ED" />
 
         </RadioGroup>
-
 
         <Button
             android:id="@+id/button5"
