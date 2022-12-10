@@ -58,6 +58,7 @@ public class NoiseDetector {
             long v = 0;
             for (int i = 0; i < buffer.length; i++) {
                 v += buffer[i] * buffer[i];
+                Log.d("buffer",String.valueOf(buffer[i]));
             }
             double mean = v / (double) r;
             volume = (10 * Math.log10(mean) + volume * noise_count) / (noise_count + 1);

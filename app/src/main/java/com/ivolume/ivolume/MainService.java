@@ -233,10 +233,10 @@ public class MainService extends AccessibilityService {
                         jsonSilentPut(json, "displays", states);
                     }
                     break;
-                case Intent.ACTION_HEADSET_PLUG:
-                    Log.d(BLUETOOTH_LOG_TAG,"headset plug in");
-                    plugged = true;
-                    break;
+//                case Intent.ACTION_HEADSET_PLUG:
+//                    Log.d(BLUETOOTH_LOG_TAG,"headset plug in");
+//                    plugged = true;
+//                    break;
                 case BluetoothDevice.ACTION_ACL_CONNECTED:
                     Log.d(BLUETOOTH_LOG_TAG,"bluetooth headset plug in");
                     plugged = true;
@@ -335,6 +335,8 @@ public class MainService extends AccessibilityService {
         CurrentPackage = "";
         Log.d("TEST","step1");
         initialize();
+        Log.d("TEST",String.valueOf(plugged));
+        plugged = false;
 
         //检测位置变化
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
