@@ -114,7 +114,8 @@ public class VolumeUpdater extends Service implements Serializable {
     transient public static VolumeUpdater mVolumeUpdater;
     private HashMap<ContextInfo, Integer> mMap;
     private NoiseAdjuster mNoiseAdjuster;
-    private double lambda = 0.5;
+    private double lambda_p = 0.4;
+    private double lambda_n = 0.8;
     private double mu = 0.2;
     transient private boolean service_status = false; //是否开启服务
     private boolean noise_calibrate_done = false; //是否进行了噪音矫正
@@ -145,7 +146,7 @@ public class VolumeUpdater extends Service implements Serializable {
         Log.d("VU", context.getFilesDir().toString());
         try {
 //            config.createNewFile();
-            FileOutputStream fos = context.openFileOutput("VolumeUpdater.dat", Context.MODE_PRIVATE);
+            FileOutputStream fos = context.openFileOutput("VolumeUpdater-v2.dat", Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(this);
             os.close();
@@ -177,13 +178,13 @@ public class VolumeUpdater extends Service implements Serializable {
 
     private void readConfig(Context context) {
         try {
-            FileInputStream fis = context.openFileInput("VolumeUpdater.dat");
+            FileInputStream fis = context.openFileInput("VolumeUpdater-v2.dat");
             ObjectInputStream is = new ObjectInputStream(fis);
             VolumeUpdater saved = (VolumeUpdater) is.readObject();
             this.mMap = saved.mMap;
             this.mNoiseAdjuster = saved.mNoiseAdjuster;
-            this.lambda = saved.lambda;
-            this.mu = saved.mu;
+//            this.lambda = saved.lambda;
+//            this.mu = saved.mu;
             this.noise_calibrate_done = saved.noise_calibrate_done;
             is.close();
             fis.close();
@@ -228,7 +229,12 @@ public class VolumeUpdater extends Service implements Serializable {
         Integer old_target = this.mMap.get(new ContextInfo(gps, app, plugged));
         int current_target = current_volume - this.mNoiseAdjuster.adjust(noise, plugged);
         if (old_target != null) {
-            int new_target = (int) Math.round(current_target * lambda + old_target * (1 - lambda));
+            int new_target;
+            if (old_target < current_target) {
+                new_target = (int) Math.round(current_target * lambda_p + old_target * (1 - lambda_p));
+            } else {
+                new_target = (int) Math.round(current_target * lambda_n + old_target * (1 - lambda_n));
+            }
             this.mMap.replace(new ContextInfo(gps, app, plugged), new_target);
             this.writeConfig(context);
             Log.d("VU", String.format("change context <gps=%d, app=%d, plugged=%b, noise=%.2f> from <%d> to <%d>",
@@ -345,8 +351,8 @@ public class VolumeUpdater extends Service implements Serializable {
         return "VolumeUpdater{" +
                 "mMap=" + mMap +
                 ", mNoiseAdjuster=" + mNoiseAdjuster +
-                ", lambda=" + lambda +
-                ", mu=" + mu +
+//                ", lambda=" + lambda +
+//                ", mu=" + mu +
                 ", noise_calibrate_done=" + noise_calibrate_done +
                 '}';
     }

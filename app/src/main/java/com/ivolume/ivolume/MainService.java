@@ -512,6 +512,7 @@ public class MainService extends AccessibilityService {
                 CurrentPackage = tmpPackage;
                 //当前app包名改变时
                 //只针对AppPackageMap的5个app进行处理，忽略其他包
+                Log.d("app_log_tag", "CurrentPackage changed, name:" + CurrentPackage);
                 if(AppPackageMap.containsKey(tmpPackage)) {
                     int cur_index = AppPackageMap.get(CurrentPackage);
                     Log.d("app_log_tag", "CurrentPackage changed, name:" + CurrentPackage
