@@ -32,7 +32,7 @@
                     android:fontFamily="sans-serif-medium"
                     android:paddingVertical="25dp"
                     android:paddingLeft="10dp"
-                    android:text="iVolume会在以下情景中进行自动音量调节。您可以切换按钮状态来启动或禁用某种情景。"
+                    android:text="iVolume会在检测到以下情景变化时，自动进行音量调节。您可以切换按钮状态来启动或禁用某种情景。"
                     android:textSize="16sp" />
 
                 <ImageView
