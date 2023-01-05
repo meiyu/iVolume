@@ -37,7 +37,7 @@
                 android:paddingVertical="10dp"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@id/imageView2"
-                android:text="        iVolume是人机交互课成第四小组设计的一款智能音量调节助手，它可以根据地点、前台app、接入设备、环境噪音自动调节手机当前的音量。"
+                android:text="        iVolume是人机交互课程第四小组设计的一款智能音量调节助手，它可以根据地点、前台app、接入设备、环境噪音自动调节手机当前的音量。"
                 android:textSize="16sp" />
 
             <TextView
