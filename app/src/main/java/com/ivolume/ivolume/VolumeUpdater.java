@@ -215,6 +215,7 @@ public class VolumeUpdater extends Service implements Serializable {
         super.onCreate();
     }
 
+    //根据用户音量调节以及问卷结果更新表项
     public void feedback(Context context, int gps, int app, boolean plugged, double noise, int qa_result) {
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         int current_volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);

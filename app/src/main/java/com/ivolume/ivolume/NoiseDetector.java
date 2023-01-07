@@ -33,6 +33,7 @@ public class NoiseDetector {
             return 3;
     }
 
+    // 从麦克风采集声音数据，一段时间后拿平均值作为背景声音大小
     public void get_volume() {
         if (isGetVoiceRun) {
             Log.e(TAG, "还在录着呢");
@@ -123,6 +124,7 @@ public class NoiseDetector {
         isGetVoiceRun = false;
     }
 
+    // 调用这个函数获取背景声音大小
     public double getNoise() {  // main entrance, call this on
         get_volume();
         return volume;

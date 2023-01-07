@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+
+//问卷activity
 @RequiresApi(api = Build.VERSION_CODES.S)
 public class Questionnaire_Activity extends AppCompatActivity {
     private static final String LOG_TAG = Questionnaire_Activity.class.getSimpleName();

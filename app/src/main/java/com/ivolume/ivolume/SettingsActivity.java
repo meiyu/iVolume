@@ -54,6 +54,7 @@ public class SettingsActivity extends AppCompatActivity {
         deviceButton2.setChecked(MainService.deviceEnable[1]);
     }
 
+    //app控制
     @RequiresApi(api = Build.VERSION_CODES.R)
     public void appButton1Click(View view) {
        MainService.appEnable[0] = !(MainService.appEnable[0]);
@@ -74,6 +75,7 @@ public class SettingsActivity extends AppCompatActivity {
         MainService.appEnable[3] = !(MainService.appEnable[3]);
     }
 
+    //位置控制
     @RequiresApi(api = Build.VERSION_CODES.R)
     public void locationButton1Click(View view) {
         MainService.locationEnable[0] = !(MainService.locationEnable[0]);
@@ -94,6 +96,7 @@ public class SettingsActivity extends AppCompatActivity {
         MainService.locationEnable[3] = !(MainService.locationEnable[3]);
     }
 
+    //耳机控制
     @RequiresApi(api = Build.VERSION_CODES.R)
     public void deviceButton1Click(View view) {
         MainService.deviceEnable[0] = !(MainService.deviceEnable[0]);
